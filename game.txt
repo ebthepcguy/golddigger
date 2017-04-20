@@ -1,0 +1,136 @@
+
+# Create Vector class to easily keep track of locations on map
+    # Each Vector has an x and y coord and cannot be changed
+
+    # Vectors can be added together by combining their x and y values
+
+    # Make Vectors return true when they are both the same
+
+# Create Map class
+    # Init:
+        # Create Map width variable
+        # Create Map depth variable
+        # Create list of valid Vectors using width and depth
+        # Create dictionary of objects using Vectors as the key
+        # Populate dictionary with blocks and spawn the player near the top (Generate Map)
+
+    # To-string:
+        # Use to-string to display map contents on screen
+
+    # Generate Map:
+        # Iterate through map Dictionary and place Air blocks on top with dirt and ore blocks underneath
+   
+        # Also place the player on the top
+
+# Create resource blocks(Air, Dirt ,Iron, Stone)  
+
+# Create Character class:
+    # Init:
+        # Create name variable
+        # Create health variable
+        # Create maximum air time variable
+        # Create variable to store when the player jumped
+        # Create direction to move Vector
+        # Create isFalling bool
+        # Create isOnGround bool
+
+    # Only for debug
+
+    # Create getters and setters:
+ 
+    # When isFalling is checked:
+        # If the character has beed in the air for too long:
+            # Set isFalling to true
+        # Return isFalling
+
+    # When isFalling is set:
+        # If setting isFalling to true
+            # Also set isOnGround to true
+
+    # When setting isOnGround:
+        # Store old variable for is OnGround
+        # If isOnGround goes from True to False:
+            # Record time that the jump occurred to timeJumped variable
+        # If setting isOnGround to True:
+            # Also set isFalling to False
+
+# Create Level object to store current char and map. Also runs game logic.
+    # Character, Map, and enemy variables
+
+    # Go through the levels map to find all objects that need to move:
+        # Create Vector for Character location
+        # Create Vector List for all stones
+        # Iterate through map to find Character and stone locations
+            
+        # Update Character location
+        # Update stone locations
+
+    # Update the characters location(pass through current location as a Vector)
+        # Get the direction that the character wants to move
+
+        # Find out what the block below the Character is:
+        
+            # If the block is Air
+                # Set the Character to isOnGround = False
+            # Else
+                # Set the Character to isOnGround = True
+        # If there is no block below them(of the map):
+            # Set the Character to isOnGround = True
+
+        # If the character is falling set their direction to down:
+
+        # Find the block that the Character wants to move to:
+            # If the Character wants to move up:
+                # If the block is Dirt:
+                    # And the Character is not falling
+                        # Damage the block
+                        # If the block is at zero health:
+                            # Destroy block
+                # If the block is Air:
+                    # And the Character is on the ground:
+                        #Jump in the air
+            # If the character wants to move in any other direction(other than up):
+                # If the block is Dirt:
+                    # Damage the block
+                    # If the blocks is at zero health
+                        # Destroy block and put the Character in its place
+                # If the block is air:
+                    # Move in that direction
+    
+    # Update all of the stone locations(pass through current locations as a Vector list)
+
+# Create Static Vectors
+# UP
+# DOWN
+# LEFT
+# RIGHT
+# STAY
+
+# Main
+    # Set window to specific size
+
+    # Create Character for level
+    # Create Map for level
+
+    # Create Level
+
+    # While game is running
+        # If no buttons are being pressed
+            # Clear screen
+
+            # Update map
+            # Print map
+            
+            # Print stuff for debug
+            # Reset direction for the character to move
+            
+        # If a button was pressed
+            # Record button press
+
+        # If button pressed was "w"
+        # If button pressed was "s"
+        # If button pressed was "a"
+        # If button pressed was "d"
+        # If button pressed was anything else
+
+# Run main
