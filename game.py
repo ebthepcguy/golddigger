@@ -328,7 +328,7 @@ def main():
         # If no buttons are being pressed
         while not msvcrt.kbhit():
             # Clear screen
-            os.system('cls')
+            
 
             # Update map
             level.updateMap()
@@ -344,6 +344,7 @@ def main():
         while msvcrt.kbhit():
             # Record button press
             input = ord(msvcrt.getch())
+            os.system('cls')
 
         # If button pressed was "w"
         if input == 119:
