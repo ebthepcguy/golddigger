@@ -1,8 +1,6 @@
 import msvcrt
 import time
 import os
-import colorama
-from colorama import Fore, Back, Style
 
 # Create Vector object to easily keep track of locations on map
 class Vector(object):
@@ -91,20 +89,18 @@ class Air(object):
         self.__health = health
 
     def __str__(self):
-        return "   "
+        return "███"
 
 class Dirt(object):
-    def __init__(self, health = 3):
+    def __init__(self, health = 2):
         self.__health = health
 
     def __str__(self):
         out = ""
-        if self.__health == 3:
-            out = "[x]"
-        elif self.__health == 2:
-            out = "[~]"
+        if self.__health == 2:
+            out = "░░░"
         elif self.__health == 1:
-            out = "[-]"
+            out = "▒▒▒"
         return out
 
     def getHealth(self):
@@ -324,19 +320,20 @@ def main():
     level = Level(char, map)
 
     # While game is running
+    print(level.getMap())
+    print(level.getChar().displayStatus())
     while True:
         # If no buttons are being pressed
         while not msvcrt.kbhit():
-            # Clear screen
-            
-
+            oldMap = str(level.getMap())
             # Update map
             level.updateMap()
-            # Print map
-            print(level.getMap())
-            
-            # Print stuff for debug
-            print(level.getChar().displayStatus())
+            # Print map if it is different than oldMap
+            if oldMap != str(level.getMap()):
+                os.system('cls')
+                print(level.getMap())
+                print(level.getChar().displayStatus())
+
             # Reset direction for the character to move
             level.getChar().setDirToMove(STAY)
             
@@ -344,7 +341,6 @@ def main():
         while msvcrt.kbhit():
             # Record button press
             input = ord(msvcrt.getch())
-            os.system('cls')
 
         # If button pressed was "w"
         if input == 119:
