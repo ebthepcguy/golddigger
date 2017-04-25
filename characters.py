@@ -1,89 +1,99 @@
-from util import Vector
-import time
+from engine.gameObject import GameObject
+from engine.image import Image
+from engine.tile import Tile
+from engine.keyboard import Keyboard, KeyCode
+from engine.util import clamp
 
-# Create Static Vectors
-UP = Vector(0,-1)
-DOWN = Vector(0,1)
-LEFT = Vector(-1,0)
-RIGHT = Vector(1,0)
-STAY = Vector(0,0)
+import level, blocks
 
-# Create Character class:
-class Character(object):
-    # Init:
-    def __init__(self, name, health):
-        # Create name variable
-        self.__name = name
-        # Create health variable
+class Character(GameObject):
+
+    def __init__(self, x, y, image, health):
+        super().__init__(x, y, image)
         self.__health = health
-        # Create maximum air time variable
-        self.__maxAirTime = 0.6
-        # Create variable to store ven the player jumped
-        self.__timeJumped = 0
-        # Create direction to move Vector
-        self.__dirToMove = STAY
-        # Create isFalling bool
-        self.__isFalling = False
-        # Create isOnGround bool
-        self.__isGrounded = True
 
-    def __str__(self):
-        if self.__isFalling == True:
-            return "~o~"
+class Player(Character):
+
+    xVel = 3
+    yVel = 1
+
+    fallSpeed = 1 #tiles per second
+
+    NORAMLIMAGE = Image([[Tile("-"), Tile("O"), Tile("-")]])
+    FALLINGIMAGE = Image([[Tile("~"), Tile("O"), Tile("~")]])
+
+    def __init__(self, x, y, health = 10):
+        super().__init__(x, y, self.NORAMLIMAGE, health)
+        self.__game = None
+        self.__fallTimer = 0
+        self.falling = False
+
+    def update(self, game):
+        self.__game = game
+        kb = game.keyboard
+
+        self.testFalling()
+
+        if(self.isFalling()):
+            self.image = self.FALLINGIMAGE
+            self.__fallTimer += game.deltaTime
         else:
-            return "-o-"
+            self.image = self.NORAMLIMAGE
 
-    # Only for debug
-    def displayStatus(self):
-        out = ""
-        out += "\nName =\t\t" + self.__name
-        out += "\nHealth =\t" + str(self.__health)
-        out += "\nTime J =\t" + str(self.__timeJumped)
-        out += "\nDir =\t\t" + str(self.__dirToMove.getPair())
-        out += "\nIsFalling =\t" + str(self.__isFalling)
-        out += "\nIsOnGrnd =\t" + str(self.__isGrounded)
-        return out
+        if(self.__fallTimer >= self.fallSpeed):
+            self.move(0,1)
+            self.__fallTimer = 0
+        elif(kb.keyPressed( KeyCode.w ) and not self.isFalling()):
+            self.move(0,-self.yVel)
+        elif(kb.keyPressed( KeyCode.s )):
+            self.move(0,self.yVel)
+        elif(kb.keyPressed( KeyCode.a )):
+            self.move(-self.xVel,0)
+        elif(kb.keyPressed( KeyCode.d )):
+            self.move(self.xVel,0)
 
-    # Create getters and setters:
-    def getDirToMove(self):
-        return self.__dirToMove
+    def move(self, x, y):
+        scene = self.__game.curScene
 
-    def setDirToMove(self, dir):
-        self.__dirToMove = dir
+        if(isinstance(scene, level.Level)):
+            gameArea = scene.getGameArea()
 
-    def getTimeInAir(self):
-        return time.time() - self.__timeJumped
+        x = clamp( self.x + x, gameArea.x, gameArea.width )
+        y = clamp( self.y + y, gameArea.y, gameArea.height )
 
-    # When isFalling is checked:
+
+        gameObjects = scene.getGameObjectsAtPos(x, y)
+
+        canMove = True
+
+        for gO in gameObjects:
+            if(gO.collision):
+                canMove = False
+            if(isinstance(gO, blocks.Stone)):
+                gO.setHealth( gO.getHealth() - 1 )
+
+
+        if(canMove):
+            self.x = x
+            self.y = y
+
+    def testFalling(self):
+        scene = self.__game.curScene
+        gameObjects = scene.getGameObjectsAtPos(self.x, self.y + 1)
+        isFalling = True
+        for gO in gameObjects:
+            if(gO.collision):
+                isFalling = False
+
+        self.__falling = isFalling
+
     def isFalling(self):
-        # If the character has beed in the air for too long:
-        if self.getTimeInAir() > self.__maxAirTime and self.__isGrounded == False:
-            # Set isFalling to true
-            self.setFalling(True)
-        # Return isFalling
-        return self.__isFalling
+        return self.__falling
 
-    # When isFalling is set:
-    def setFalling(self, falling):
-        self.__isFalling = falling
-        # If setting isFalling to true
-        if falling == True:
-            # Also set isOnGround to true
-            self.setGrounded(False)
 
-    def isGrounded(self):
-        return self.__isGrounded
 
-    # When setting isOnGround:
-    def setGrounded(self, grounded):
-        # Store old variable for is OnGround
-        oldIsGrounded = self.__isGrounded
-        self.__isGrounded = grounded
-        # If isOnGround goes from True to False:
-        if oldIsGrounded == True and self.__isGrounded == False:
-            # Recort time that the jump occured to timeJumped variable
-            self.__timeJumped = time.time()
-        # If setting isOnGround to True:
-        if grounded == True:
-            # Also set isFalling to False
-            self.setFalling(False)
+
+class Enemy(Character):
+
+    def __init__(self, x, y, image, health):
+        super().__init__(x, y, image, health)
