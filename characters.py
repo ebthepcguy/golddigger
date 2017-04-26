@@ -69,7 +69,7 @@ class Player(Character):
         for gO in gameObjects:
             if(gO.collision):
                 canMove = False
-            if(isinstance(gO, blocks.Stone)):
+            if(isinstance(gO, blocks.Dirt)):
                 gO.setHealth( gO.getHealth() - 1 )
 
 

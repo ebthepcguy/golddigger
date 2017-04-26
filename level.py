@@ -9,7 +9,7 @@ from debugDisplay import DebugDisplay
 
 class Level(Scene):
 
-    AIR_LEVEL = 0
+    AIR_LEVEL = 3
 
     def __init__(self):
         super().__init__()
@@ -32,7 +32,7 @@ class Level(Scene):
         # Build base layer of air and stone
         for row in range(0,height):
             for col in range(0, width * 3, 3):
-                if(lvl == 0 and row == self.AIR_LEVEL):
+                if(lvl == 0 and row in range(0, self.AIR_LEVEL)):
                     block = blocks.Air(col, row)
                 elif(row == height - 1):
                     if(col == int(width / 3) -1):
@@ -40,9 +40,17 @@ class Level(Scene):
                     else:
                         block = blocks.Wall(col, row)
                 else:
-                    block = blocks.Stone(col, row)
+                    # to test some thing out
+                    if col == 3 and row == 5:
+                        block = blocks.Stone(col, row)
+                    else:
+                        block = blocks.Dirt(col, row)
 
                 self.addGameObject(block)
 
         # Add player
         self.addGameObject(self.__player)
+
+        # to test some thing out
+        block = blocks.Stone(3, 0)
+        self.addGameObject(block)
