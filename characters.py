@@ -11,46 +11,10 @@ class Character(GameObject):
     def __init__(self, x, y, image, health):
         super().__init__(x, y, image)
         self.__health = health
-
-class Player(Character):
-
-    xVel = 3
-    yVel = 1
-
-    fallSpeed = 1 #tiles per second
-
-    NORAMLIMAGE = Image([[Tile("-"), Tile("O"), Tile("-")]])
-    FALLINGIMAGE = Image([[Tile("~"), Tile("O"), Tile("~")]])
-
-    def __init__(self, x, y, health = 10):
-        super().__init__(x, y, self.NORAMLIMAGE, health)
         self.__game = None
-        self.__fallTimer = 0
-        self.falling = False
 
     def update(self, game):
         self.__game = game
-        kb = game.keyboard
-
-        self.testFalling()
-
-        if(self.isFalling()):
-            self.image = self.FALLINGIMAGE
-            self.__fallTimer += game.deltaTime
-        else:
-            self.image = self.NORAMLIMAGE
-
-        if(self.__fallTimer >= self.fallSpeed):
-            self.move(0,1)
-            self.__fallTimer = 0
-        elif(kb.keyPressed( KeyCode.w ) and not self.isFalling()):
-            self.move(0,-self.yVel)
-        elif(kb.keyPressed( KeyCode.s )):
-            self.move(0,self.yVel)
-        elif(kb.keyPressed( KeyCode.a )):
-            self.move(-self.xVel,0)
-        elif(kb.keyPressed( KeyCode.d )):
-            self.move(self.xVel,0)
 
     def move(self, x, y):
         scene = self.__game.curScene
@@ -89,6 +53,51 @@ class Player(Character):
 
     def isFalling(self):
         return self.__falling
+
+
+
+
+
+
+class Player(Character):
+
+    xVel = 3
+    yVel = 1
+
+    fallSpeed = 1 #tiles per second
+
+    NORAMLIMAGE = Image([[Tile("-"), Tile("O"), Tile("-")]])
+    FALLINGIMAGE = Image([[Tile("~"), Tile("O"), Tile("~")]])
+
+    def __init__(self, x, y, health = 10):
+        super().__init__(x, y, self.NORAMLIMAGE, health)
+        self.__game = None
+        self.__fallTimer = 0
+        self.falling = False
+
+    def update(self, game):
+        super().update(game)
+        kb = game.keyboard
+
+        self.testFalling()
+
+        if(self.isFalling()):
+            self.image = self.FALLINGIMAGE
+            self.__fallTimer += game.deltaTime
+        else:
+            self.image = self.NORAMLIMAGE
+
+        if(self.__fallTimer >= self.fallSpeed):
+            self.move(0,1)
+            self.__fallTimer = 0
+        elif(kb.keyPressed( KeyCode.w ) and not self.isFalling()):
+            self.move(0,-self.yVel)
+        elif(kb.keyPressed( KeyCode.s )):
+            self.move(0,self.yVel)
+        elif(kb.keyPressed( KeyCode.a )):
+            self.move(-self.xVel,0)
+        elif(kb.keyPressed( KeyCode.d )):
+            self.move(self.xVel,0)
 
 
 
