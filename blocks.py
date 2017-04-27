@@ -10,7 +10,7 @@ class Block(GameObject):
         super().__init__(x, y, image, collision)
         self.__game = None
         self.falling = False
-        
+
     def update(self, game):
         self.__game = game
 
@@ -63,6 +63,7 @@ class Dirt(Block):
 
     FULL = Image([[Tile("▒"), Tile("▒"), Tile("▒")]])
     HALF = Image([[Tile("░"), Tile("░"), Tile("░")]])
+
 
     def __init__(self, x, y, health = 2):
         image = self.FULL

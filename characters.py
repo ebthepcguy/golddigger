@@ -55,10 +55,6 @@ class Character(GameObject):
         return self.__falling
 
 
-
-
-
-
 class Player(Character):
 
     xVel = 3
