@@ -18,5 +18,6 @@ class DebugDisplay(GameObject):
         image += "Player: (" + str(player.x) + ", " + str(player.y) + ") " + "\n"
         image += "Delta Time: " + str(dt) + "\n"
         image += "Game Objects: " + str(scene.len()) + "\n"
+        image += "Player isFalling: " + str(player.falling) + "\n"
 
         self.image = Image.stringToImage(image)

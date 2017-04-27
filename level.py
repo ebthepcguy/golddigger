@@ -20,6 +20,8 @@ class Level(Scene):
         self.__gameArea = Rect(self.game.width, self.game.height - 9, 0, 0)
         self.generate(0, self.__gameArea.width, self.__gameArea.height)
 
+        self.addGameObject(characters.Enemy(15,3))
+
 
     def getPlayer(self):
         return self.__player

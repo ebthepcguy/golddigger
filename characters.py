@@ -12,6 +12,8 @@ class Character(GameObject):
         super().__init__(x, y, image)
         self.__health = health
         self.__game = None
+        self.__fallTimer = 0
+        self.__falling = False
 
     def update(self, game):
         self.__game = game
@@ -41,6 +43,22 @@ class Character(GameObject):
             self.x = x
             self.y = y
 
+    @property
+    def falling(self):
+        return self.__falling
+
+    @falling.setter
+    def falling(self, falling):
+        self.__falling = falling
+
+    @property
+    def fallTimer(self):
+        return self.__fallTimer
+
+    @fallTimer.setter
+    def fallTimer(self, fallTimer):
+        self.__fallTimer = fallTimer
+
     def testFalling(self):
         scene = self.__game.curScene
         gameObjects = scene.getGameObjectsAtPos(self.x, self.y + 1)
@@ -49,10 +67,7 @@ class Character(GameObject):
             if(gO.collision):
                 isFalling = False
 
-        self.__falling = isFalling
-
-    def isFalling(self):
-        return self.__falling
+        self.falling = isFalling
 
 
 class Player(Character):
@@ -68,8 +83,6 @@ class Player(Character):
     def __init__(self, x, y, health = 10):
         super().__init__(x, y, self.NORAMLIMAGE, health)
         self.__game = None
-        self.__fallTimer = 0
-        self.falling = False
 
     def update(self, game):
         super().update(game)
@@ -77,16 +90,16 @@ class Player(Character):
 
         self.testFalling()
 
-        if(self.isFalling()):
+        if(self.falling):
             self.image = self.FALLINGIMAGE
-            self.__fallTimer += game.deltaTime
+            self.fallTimer += game.deltaTime
         else:
             self.image = self.NORAMLIMAGE
 
-        if(self.__fallTimer >= self.fallSpeed):
+        if(self.fallTimer >= self.fallSpeed):
             self.move(0,1)
-            self.__fallTimer = 0
-        elif(kb.keyPressed( KeyCode.w ) and not self.isFalling()):
+            self.fallTimer = 0
+        elif(kb.keyPressed( KeyCode.w ) and not self.falling):
             self.move(0,-self.yVel)
         elif(kb.keyPressed( KeyCode.s )):
             self.move(0,self.yVel)
@@ -100,5 +113,26 @@ class Player(Character):
 
 class Enemy(Character):
 
-    def __init__(self, x, y, image, health):
-        super().__init__(x, y, image, health)
+    WALK_SPEED = 1
+    NORAMLIMAGE = Image([[Tile("<"), Tile("E"), Tile(">")]])
+    def __init__(self, x, y, health = 2):
+        super().__init__(x, y, self.NORAMLIMAGE, health)
+        self.__walkTimer = 0
+        self.__XDIR = 1
+
+    def update(self, game):
+        super().update(game)
+        self.__walkTimer += game.deltaTime
+
+        if(self.__walkTimer >= self.WALK_SPEED):
+            self.__walkTimer = 0
+
+            gameObjects = game.curScene.getGameObjectsAtPos(self.x + self.__XDIR, self.y)
+            canMove = True
+            for gO in gameObjects:
+                if(gO.collision):
+                    canMove = False
+                    self.__XDIR *= -1
+
+            if(canMove):
+                self.move(self.__XDIR * 3 , 0)
