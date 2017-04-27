@@ -113,11 +113,11 @@ class MenuSelect(GameObject):
             self.startGame(game)
 
         elif(self.__menuPosX == 1 and self.__menuPosY == 0):
-            self.image = self.image2
+            pass
         elif(self.__menuPosX == 0 and self.__menuPosY == 1):
-            self.image = self.image3
+            pass
         elif(self.__menuPosX == 1 and self.__menuPosY == 1):
-            self.image = self.image4
+            game.quit()
 
     def move(self, x, y):
         self.__menuPosX = clamp(self.__menuPosX + x, 0, 2)
