@@ -6,6 +6,7 @@ from engine.util import Rect
 import characters
 import blocks
 from debugDisplay import DebugDisplay
+from hud import Hud
 
 class Level(Scene):
 
@@ -16,10 +17,13 @@ class Level(Scene):
 
     def load(self):
         self.__player = characters.Player(0,0)
-        self.addGameObject(DebugDisplay(0, self.game.height - 6))
+
+        self.addGameObject(DebugDisplay(0, self.game.height - 6)) #TEMP
+
         self.__gameArea = Rect(self.game.width, self.game.height - 9, 0, 0)
         self.generate(0, self.__gameArea.width, self.__gameArea.height)
 
+        self.addGameObject(Hud(0, self.__gameArea.height))
         self.addGameObject(characters.Enemy(15,3))
 
 

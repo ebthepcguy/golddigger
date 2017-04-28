@@ -8,16 +8,21 @@ import level, blocks, levelEditor
 
 class Character(GameObject):
 
-    def __init__(self, x, y, image, health):
+    def __init__(self, x, y, image, maxHealth):
         super().__init__(x, y, image)
-        self.__health = health
+        self.maxHealth = maxHealth
+        self.health = maxHealth
         self.__game = None
         self.__fallTimer = 0
         self.__falling = False
         self.__canDig = False
+        self.__canAttack = False
 
     def update(self, game):
         self.__game = game
+
+        if(self.health == 0):
+            game.curScene.removeGameObject(self)
 
     def move(self, x, y):
         scene = self.__game.curScene
@@ -36,14 +41,35 @@ class Character(GameObject):
             for gO in gameObjects:
                 if(gO.collision):
                     canMove = False
+
                 if(self.canDig):
                     if(isinstance(gO, blocks.Dirt)):
                         gO.setHealth( gO.getHealth() - 1 )
 
 
+                if(isinstance(gO, Character)):
+                    gO.health -= 1
+
+
             if(canMove):
                 self.x = x
                 self.y = y
+
+    @property
+    def health(self):
+        return self.__health
+
+    @health.setter
+    def health(self, health):
+        self.__health = health
+
+    @property
+    def maxHealth(self):
+        return self.__maxHealth
+
+    @maxHealth.setter
+    def maxHealth(self, maxHealth):
+        self.__maxHealth = maxHealth
 
     @property
     def falling(self):
@@ -69,6 +95,14 @@ class Character(GameObject):
     def canDig(self, canDig):
         self.__canDig = canDig
 
+    @property
+    def canAttack(self):
+        return self.__canDig
+
+    @canAttack.setter
+    def canAttack(self, canAttack):
+        self.__canAttack = canAttack
+
     def testFalling(self):
         scene = self.__game.curScene
         gameObjects = scene.getGameObjectsAtPos(self.x, self.y + 1)
@@ -88,12 +122,13 @@ class Player(Character):
 
     fallSpeed = 1 #tiles per second
 
-    NORAMLIMAGE = Image([[Tile("-"), Tile("O"), Tile("-")]])
-    FALLINGIMAGE = Image([[Tile("~"), Tile("O"), Tile("~")]])
+    NORAML_IMAGE = Image([[Tile("-"), Tile("O"), Tile("-")]])
+    FALLING_IMAGE = Image([[Tile("~"), Tile("O"), Tile("~")]])
 
-    def __init__(self, x, y, health = 10):
-        super().__init__(x, y, self.NORAMLIMAGE, health)
+    def __init__(self, x, y, maxHealth = 3):
+        super().__init__(x, y, self.NORAML_IMAGE, maxHealth)
         self.canDig = True
+        self.canAttack = True
 
     def update(self, game):
         super().update(game)
@@ -102,10 +137,10 @@ class Player(Character):
         self.testFalling()
 
         if(self.falling):
-            self.image = self.FALLINGIMAGE
+            self.image = self.FALLING_IMAGE
             self.fallTimer += game.deltaTime
         else:
-            self.image = self.NORAMLIMAGE
+            self.image = self.NORAML_IMAGE
 
         if(self.fallTimer >= self.fallSpeed):
             self.move(0,1)
@@ -124,18 +159,23 @@ class Player(Character):
 
 class Enemy(Character):
 
-    WALK_SPEED = 1
     fallSpeed = 1
-    NORAMLIMAGE = Image([[Tile("<"), Tile("E"), Tile(">")]])
-    def __init__(self, x, y, health = 2):
-        super().__init__(x, y, self.NORAMLIMAGE, health)
+    WALK_SPEED = 1
+    LEFT_IMAGE = Image([[Tile("<"), Tile("<"), Tile("E")]])
+    RIGHT_IMAGE = Image([[Tile("E"), Tile(">"), Tile(">")]])
+
+    def __init__(self, x, y, maxHealth = 2):
+        super().__init__(x, y, self.RIGHT_IMAGE, maxHealth)
         self.__walkTimer = 0
         self.__xVel = 3
+        self.canAttack = True
 
     def update(self, game):
         super().update(game)
 
+        # Increment time until enemy will atempt to move again
         self.__walkTimer += game.deltaTime
+
         self.testFalling()
 
         if(self.falling):
@@ -148,14 +188,19 @@ class Enemy(Character):
             self.__walkTimer = 0
 
             # Movement AI
-            # Move untill collision then switch directions
+            # Move until collision then switch directions
             gameObjects = game.curScene.getGameObjectsAtPos(self.x + self.__xVel, self.y)
             canMove = True
             for gO in gameObjects:
-                if(gO.collision):
+                if(gO.collision and not isinstance(gO, Player)):
+                    # If we cannot move switch directions
                     canMove = False
                     self.__xVel *= -1
-
+                    # Update Image
+                    if(self.__xVel > 0):
+                        self.image = self.RIGHT_IMAGE
+                    elif(self.__xVel < 0):
+                        self.image = self.LEFT_IMAGE
             if(canMove):
                 self.move(self.__xVel , 0)
 
