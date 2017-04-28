@@ -35,7 +35,7 @@ class MenuSelect(GameObject):
 
     image1 = Image.stringToImage(\
     """
-    > Launch GoldDigger    View Credits
+    > Launch GoldDigger    Launch Level Editor
 
       Load Saved Game      Exit Game
     --------------------------------------------
@@ -43,7 +43,7 @@ class MenuSelect(GameObject):
 
     image2 = Image.stringToImage(\
     """
-      Launch GoldDigger  > View Credits
+      Launch GoldDigger  > Launch Level Editor
 
       Load Saved Game      Exit Game
     --------------------------------------------
@@ -51,7 +51,7 @@ class MenuSelect(GameObject):
 
     image3 = Image.stringToImage(\
     """
-      Launch GoldDigger    View Credits
+      Launch GoldDigger    Launch Level Editor
 
     > Load Saved Game      Exit Game
     --------------------------------------------
@@ -59,7 +59,7 @@ class MenuSelect(GameObject):
 
     image4 = Image.stringToImage(\
     """
-      Launch GoldDigger    View Credits
+      Launch GoldDigger    Launch Level Editor
 
       Load Saved Game    > Exit Game
     --------------------------------------------
@@ -69,7 +69,7 @@ class MenuSelect(GameObject):
 
         image = \
         """
-        > Launch GoldDigger    View Credits
+        > Launch GoldDigger    Launch Level Editor
 
           Load Saved Game      Exit Game
         --------------------------------------------
@@ -85,6 +85,8 @@ class MenuSelect(GameObject):
     def update(self, game):
         kb = game.keyboard
 
+        # To remove later: Needed for testing
+        #self.startEditor(game)
 
         if(kb.keyPressed( KeyCode.w )):
             self.move(0,-1)
@@ -113,7 +115,9 @@ class MenuSelect(GameObject):
             self.startGame(game)
 
         elif(self.__menuPosX == 1 and self.__menuPosY == 0):
-            pass
+
+            self.startEditor(game)
+
         elif(self.__menuPosX == 0 and self.__menuPosY == 1):
             pass
         elif(self.__menuPosX == 1 and self.__menuPosY == 1):
@@ -127,3 +131,9 @@ class MenuSelect(GameObject):
         import level
         level = level.Level()
         game.loadScene(level)
+
+    def startEditor(self, game):
+        import levelEditor
+        editor = levelEditor.LevelEditor()
+        game.loadScene(editor)
+

@@ -26,4 +26,5 @@ class Keyboard(object):
 class KeyCode(Enum):
     # Generate Enums for keys a=97 through z= 123
     a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z = range(97, 123)
+    ZERO, ONE, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE = range(48, 58)
     ENTER = 13

@@ -24,21 +24,21 @@ class Block(GameObject):
         if(isinstance(scene, level.Level)):
             gameArea = scene.getGameArea()
 
-        x = clamp( self.x, gameArea.x, gameArea.width )
-        y = clamp( self.y + 1, gameArea.y, gameArea.height )
+            x = clamp( self.x, gameArea.x, gameArea.width )
+            y = clamp( self.y + 1, gameArea.y, gameArea.height )
 
 
-        gameObjects = scene.getGameObjectsAtPos(x, y)
+            gameObjects = scene.getGameObjectsAtPos(x, y)
 
-        canMove = True
+            canMove = True
 
-        for gO in gameObjects:
-            if(gO.collision):
-                canMove = False
+            for gO in gameObjects:
+                if(gO.collision):
+                    canMove = False
 
-        if(canMove):
-            self.x = x
-            self.y = y
+            if(canMove):
+                self.x = x
+                self.y = y
 
     def testFalling(self):
         scene = self.__game.curScene

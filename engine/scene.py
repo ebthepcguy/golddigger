@@ -79,6 +79,12 @@ class Scene(object):
 
         return gOAtPos
 
+    def removeGameObjectsAtPos(self,x,y, exclude = None):
+        gOs = self.getGameObjectsAtPos(x, y)
+        for gO in gOs:
+            if gO != exclude:
+                self.removeGameObject(gO)
+
     @property
     def game(self):
         return self.__game

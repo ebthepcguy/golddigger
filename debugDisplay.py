@@ -11,8 +11,8 @@ class DebugDisplay(GameObject):
         scene = game.curScene
         dt = game.deltaTime
 
-        if(isinstance(scene, level.Level)):
-            player = scene.getPlayer()
+        #if(isinstance(scene, level.Level)):
+        player = scene.getPlayer()
 
         image = ""
         image += "Player: (" + str(player.x) + ", " + str(player.y) + ") " + "\n"

@@ -4,7 +4,7 @@ from engine.tile import Tile
 from engine.keyboard import Keyboard, KeyCode
 from engine.util import clamp
 
-import level, blocks
+import level, blocks, levelEditor
 
 class Character(GameObject):
 
@@ -24,24 +24,24 @@ class Character(GameObject):
         if(isinstance(scene, level.Level)):
             gameArea = scene.getGameArea()
 
-        x = clamp( self.x + x, gameArea.x, gameArea.width )
-        y = clamp( self.y + y, gameArea.y, gameArea.height )
+            x = clamp( self.x + x, gameArea.x, gameArea.width )
+            y = clamp( self.y + y, gameArea.y, gameArea.height )
 
 
-        gameObjects = scene.getGameObjectsAtPos(x, y)
+            gameObjects = scene.getGameObjectsAtPos(x, y)
 
-        canMove = True
+            canMove = True
 
-        for gO in gameObjects:
-            if(gO.collision):
-                canMove = False
-            if(isinstance(gO, blocks.Dirt)):
-                gO.setHealth( gO.getHealth() - 1 )
+            for gO in gameObjects:
+                if(gO.collision):
+                    canMove = False
+                if(isinstance(gO, blocks.Dirt)):
+                    gO.setHealth( gO.getHealth() - 1 )
 
 
-        if(canMove):
-            self.x = x
-            self.y = y
+            if(canMove):
+                self.x = x
+                self.y = y
 
     @property
     def falling(self):
@@ -68,6 +68,9 @@ class Character(GameObject):
                 isFalling = False
 
         self.falling = isFalling
+
+    def getGame(self):
+        return self.__game
 
 
 class Player(Character):
@@ -136,3 +139,59 @@ class Enemy(Character):
 
             if(canMove):
                 self.move(self.__XDIR * 3 , 0)
+
+
+
+class EditCursor(Character):
+
+    xVel = 3
+    yVel = 1
+
+    def __init__(self, x, y, health = 10):
+        image = Image.stringToImage("{")
+        super().__init__(x, y, image, health)
+
+    def update(self, game):
+        super().update(game)
+        scene = self.getGame().curScene
+
+        kb = game.keyboard
+        gO = ""
+
+        if (kb.keyPressed(KeyCode.w)):
+            self.move(0, -self.yVel)
+        elif (kb.keyPressed(KeyCode.s)):
+            self.move(0, self.yVel)
+        elif (kb.keyPressed(KeyCode.a)):
+            self.move(-self.xVel, 0)
+        elif (kb.keyPressed(KeyCode.d)):
+            self.move(self.xVel, 0)
+        elif (kb.keyPressed(KeyCode.ZERO)):
+            scene.removeGameObjectsAtPos(self.x, self.y, self)
+        elif (kb.keyPressed(KeyCode.ONE)):
+            gO = blocks.Dirt(self.x, self.y)
+        elif (kb.keyPressed(KeyCode.TWO)):
+            gO = blocks.Air(self.x, self.y)
+        elif (kb.keyPressed(KeyCode.THREE)):
+            gO = blocks.Stone(self.x, self.y)
+        elif (kb.keyPressed(KeyCode.FOUR)):
+            gO = blocks.Wall(self.x, self.y)
+        elif (kb.keyPressed(KeyCode.FIVE)):
+            gO = Enemy(self.x, self.y)
+
+        if gO:
+            scene.removeGameObjectsAtPos(self.x, self.y, self)
+            scene.addGameObject(gO)
+
+    def move(self, x, y):
+        scene = self.getGame().curScene
+
+        if (isinstance(scene, levelEditor.LevelEditor)):
+            gameArea = scene.getGameArea()
+
+            x = clamp(self.x + x, gameArea.x, gameArea.width)
+            y = clamp(self.y + y, gameArea.y, gameArea.height)
+
+            self.x = x
+            self.y = y
+
