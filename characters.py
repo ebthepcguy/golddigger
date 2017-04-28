@@ -55,6 +55,9 @@ class Character(GameObject):
                 self.x = x
                 self.y = y
 
+    def getGame(self):
+        return self.__game
+
     @property
     def health(self):
         return self.__health
