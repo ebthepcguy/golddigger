@@ -85,6 +85,14 @@ class Scene(object):
             if gO != exclude:
                 self.removeGameObject(gO)
 
+    def hasAny(self, type):
+        out = False
+        for layer in self.__gameObjects:
+            for gO in layer:
+                if(isinstance(gO, type)):
+                    out = True
+        return out
+
     @property
     def game(self):
         return self.__game

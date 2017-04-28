@@ -16,12 +16,17 @@ class Level(Scene):
         super().__init__()
 
     def load(self):
+<<<<<<< HEAD
         self.__player = characters.Player(0,0)
 
         self.addGameObject(DebugDisplay(0, self.game.height - 6)) #TEMP
 
+=======
+        self.__player = characters.Player(3,1)
+        self.addGameObject(DebugDisplay(0, self.game.height - 6))
+>>>>>>> origin/master
         self.__gameArea = Rect(self.game.width, self.game.height - 9, 0, 0)
-        self.generate(0, self.__gameArea.width, self.__gameArea.height)
+        self.generate(self.__gameArea.width, self.__gameArea.height)
 
         self.addGameObject(Hud(0, self.__gameArea.height))
         self.addGameObject(characters.Enemy(15,3))
@@ -33,24 +38,24 @@ class Level(Scene):
     def getGameArea(self):
         return self.__gameArea
 
-    def generate(self, lvl, width, height):
+    def generate(self, width, height):
 
         # Build base layer of air and stone
         for row in range(0,height):
             for col in range(0, width * 3, 3):
-                if(lvl == 0 and row in range(0, self.AIR_LEVEL)):
+                if (row == 0):
+                    block = blocks.Wall(col, row)
+                elif ( col == 0 or col == width - 3):
+                    block = blocks.Wall(col, row)
+                elif (row in range(0, self.AIR_LEVEL)):
                     block = blocks.Air(col, row)
-                elif(row == height - 1):
+                elif (row == height - 1):
                     if(col == int(width / 3) -1):
                         block = blocks.Door(col, row)
                     else:
                         block = blocks.Wall(col, row)
                 else:
-                    # to test some thing out
-                    if col == 3 and row == 5:
-                        block = blocks.Stone(col, row)
-                    else:
-                        block = blocks.Dirt(col, row)
+                    block = blocks.Dirt(col, row)
 
                 self.addGameObject(block)
 
@@ -58,5 +63,10 @@ class Level(Scene):
         self.addGameObject(self.__player)
 
         # to test some thing out
+<<<<<<< HEAD
         block = blocks.Stone(3, 0)
         self.addGameObject(block)
+=======
+        block = blocks.Stone(3, 3)
+        self.addGameObject(block)
+>>>>>>> origin/master
