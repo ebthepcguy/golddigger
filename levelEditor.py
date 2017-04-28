@@ -9,7 +9,7 @@ from debugDisplay import DebugDisplay
 
 class LevelEditor(Scene):
 
-    AIR_LEVEL = 3
+    AIR_LEVEL = 5
 
     def __init__(self):
         super().__init__()
@@ -19,7 +19,7 @@ class LevelEditor(Scene):
         self.__player = characters.EditCursor(3, 0)
         self.addGameObject(DebugDisplay(0, self.game.height - 6))
         self.__gameArea = Rect(self.game.width, self.game.height - 9, 0, 0)
-        self.generate(0, self.__gameArea.width, self.__gameArea.height)
+        self.generate(self.__gameArea.width, self.__gameArea.height)
 
     def getPlayer(self):
         return self.__player
@@ -27,14 +27,18 @@ class LevelEditor(Scene):
     def getGameArea(self):
         return self.__gameArea
 
-    def generate(self, lvl, width, height):
+    def generate(self, width, height):
 
         # Build base layer of air and stone
         for row in range(0,height):
             for col in range(0, width * 3, 3):
-                if(lvl == 0 and row in range(0, self.AIR_LEVEL)):
+                if (row == 0):
+                    block = blocks.Wall(col, row)
+                elif ( col == 0 or col == width - 3):
+                    block = blocks.Wall(col, row)
+                elif (row in range(0, self.AIR_LEVEL)):
                     block = blocks.Air(col, row)
-                elif(row == height - 1):
+                elif (row == height - 1):
                     if(col == int(width / 3) -1):
                         block = blocks.Door(col, row)
                     else:

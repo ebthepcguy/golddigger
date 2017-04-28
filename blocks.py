@@ -56,7 +56,7 @@ class Block(GameObject):
 
 class Air(Block):
     def __init__(self, x, y):
-        image = Image([[Tile("█"), Tile("█"), Tile("█")]])
+        image = Image([[Tile(" "), Tile(" "), Tile(" ")]])
         super().__init__(x, y, image, False)
 
 class Dirt(Block):
@@ -100,10 +100,16 @@ class Stone(Block):
 
 class Wall(Block):
     def __init__(self, x, y):
-        image = Image([[Tile("="), Tile("="), Tile("=")]])
+        image = Image([[Tile("█"), Tile("█"), Tile("█")]])
         super().__init__(x, y, image)
 
 class Door(Block):
     def __init__(self, x, y):
         image = Image([[Tile(" "),Tile(" "),Tile(" ")]])
         super().__init__(x, y, image)
+
+class EditMarker(Block):
+    def __init__(self, x, y):
+        image = Image.stringToImage(" *")
+        super().__init__(x, y, image)
+
