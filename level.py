@@ -16,15 +16,10 @@ class Level(Scene):
         super().__init__()
 
     def load(self):
-<<<<<<< HEAD
-        self.__player = characters.Player(0,0)
 
-        self.addGameObject(DebugDisplay(0, self.game.height - 6)) #TEMP
-
-=======
         self.__player = characters.Player(3,1)
         self.addGameObject(DebugDisplay(0, self.game.height - 6))
->>>>>>> origin/master
+
         self.__gameArea = Rect(self.game.width, self.game.height - 9, 0, 0)
         self.generate(self.__gameArea.width, self.__gameArea.height)
 
@@ -63,10 +58,9 @@ class Level(Scene):
         self.addGameObject(self.__player)
 
         # to test some thing out
-<<<<<<< HEAD
+
         block = blocks.Stone(3, 0)
         self.addGameObject(block)
-=======
+
         block = blocks.Stone(3, 3)
         self.addGameObject(block)
->>>>>>> origin/master
