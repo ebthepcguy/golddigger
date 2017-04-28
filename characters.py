@@ -14,6 +14,7 @@ class Character(GameObject):
         self.__game = None
         self.__fallTimer = 0
         self.__falling = False
+        self.__canDig = False
 
     def update(self, game):
         self.__game = game
@@ -35,8 +36,9 @@ class Character(GameObject):
             for gO in gameObjects:
                 if(gO.collision):
                     canMove = False
-                if(isinstance(gO, blocks.Dirt)):
-                    gO.setHealth( gO.getHealth() - 1 )
+                if(self.canDig):
+                    if(isinstance(gO, blocks.Dirt)):
+                        gO.setHealth( gO.getHealth() - 1 )
 
 
             if(canMove):
@@ -59,6 +61,14 @@ class Character(GameObject):
     def fallTimer(self, fallTimer):
         self.__fallTimer = fallTimer
 
+    @property
+    def canDig(self):
+        return self.__canDig
+
+    @canDig.setter
+    def canDig(self, canDig):
+        self.__canDig = canDig
+
     def testFalling(self):
         scene = self.__game.curScene
         gameObjects = scene.getGameObjectsAtPos(self.x, self.y + 1)
@@ -69,8 +79,6 @@ class Character(GameObject):
 
         self.falling = isFalling
 
-    def getGame(self):
-        return self.__game
 
 
 class Player(Character):
@@ -85,7 +93,7 @@ class Player(Character):
 
     def __init__(self, x, y, health = 10):
         super().__init__(x, y, self.NORAMLIMAGE, health)
-        self.__game = None
+        self.canDig = True
 
     def update(self, game):
         super().update(game)
@@ -117,28 +125,39 @@ class Player(Character):
 class Enemy(Character):
 
     WALK_SPEED = 1
+    fallSpeed = 1
     NORAMLIMAGE = Image([[Tile("<"), Tile("E"), Tile(">")]])
     def __init__(self, x, y, health = 2):
         super().__init__(x, y, self.NORAMLIMAGE, health)
         self.__walkTimer = 0
-        self.__XDIR = 1
+        self.__xVel = 3
 
     def update(self, game):
         super().update(game)
-        self.__walkTimer += game.deltaTime
 
-        if(self.__walkTimer >= self.WALK_SPEED):
+        self.__walkTimer += game.deltaTime
+        self.testFalling()
+
+        if(self.falling):
+            self.fallTimer += game.deltaTime
+
+        if(self.fallTimer >= self.fallSpeed):
+            self.move(0,1)
+            self.fallTimer = 0
+        elif(self.__walkTimer >= self.WALK_SPEED):
             self.__walkTimer = 0
 
-            gameObjects = game.curScene.getGameObjectsAtPos(self.x + self.__XDIR, self.y)
+            # Movement AI
+            # Move untill collision then switch directions
+            gameObjects = game.curScene.getGameObjectsAtPos(self.x + self.__xVel, self.y)
             canMove = True
             for gO in gameObjects:
                 if(gO.collision):
                     canMove = False
-                    self.__XDIR *= -1
+                    self.__xVel *= -1
 
             if(canMove):
-                self.move(self.__XDIR * 3 , 0)
+                self.move(self.__xVel , 0)
 
 
 
@@ -194,4 +213,3 @@ class EditCursor(Character):
 
             self.x = x
             self.y = y
-
