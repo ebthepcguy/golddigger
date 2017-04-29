@@ -2,8 +2,9 @@ from engine.image import Image
 from engine.tile import Tile
 from engine.game import Game
 from engine.gameObject import GameObject
-import level
 from engine.util import clamp
+import level
+import levelEditor
 
 class Block(GameObject):
     def __init__(self, x, y, image, collision = True):
@@ -98,6 +99,11 @@ class Stone(Block):
         if(self.isFalling()):
             self.fall()
 
+class Gold(Block):
+    def __init__(self, x, y):
+        image = Image([[Tile("["), Tile("$"), Tile("]")]])
+        super().__init__(x, y, image)
+
 class Wall(Block):
     def __init__(self, x, y):
         image = Image([[Tile("█"), Tile("█"), Tile("█")]])
@@ -106,6 +112,37 @@ class Wall(Block):
 class Door(Block):
     def __init__(self, x, y):
         image = Image([[Tile(" "),Tile(" "),Tile(" ")]])
+        super().__init__(x, y, image)
+
+    def update(self, game):
+        scene = game.curScene
+
+        if (isinstance(scene, levelEditor.LevelEditor)):
+            self.image = Image([[Tile("|"), Tile("D"), Tile("|")]])
+        else:
+            self.image = Image([[Tile(" "), Tile(" "), Tile(" ")]])
+
+class PlayerSpawn(Block):
+    def __init__(self, x, y):
+        image = Image([[Tile(" "), Tile(" "), Tile(" ")]])
+        super().__init__(x, y, image)
+
+    def update(self, game):
+        scene = game.curScene
+
+        if (isinstance(scene, levelEditor.LevelEditor)):
+            self.image = Image([[Tile("|"), Tile("P"), Tile("|")]])
+        else:
+            self.image = Image([[Tile(" "), Tile(" "), Tile(" ")]])
+
+class GoldPickup(Block):
+    def __init__(self, x, y):
+        image = Image([[Tile(" "), Tile("$"), Tile(" ")]])
+        super().__init__(x, y, image)
+
+class HealthPickup(Block):
+    def __init__(self, x, y):
+        image = Image([[Tile(" "), Tile("+"), Tile(" ")]])
         super().__init__(x, y, image)
 
 class EditMarker(Block):
