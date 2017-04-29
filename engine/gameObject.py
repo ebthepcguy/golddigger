@@ -9,7 +9,6 @@ class GameObject(object):
         self.image = image
         self.__collision = collision # If the object has collision
 
-
     @property
     def x(self):
         return self.__x

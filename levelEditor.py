@@ -2,6 +2,8 @@ from engine.scene import Scene
 from engine.gameObject import GameObject
 from engine.game import Game
 from engine.util import Rect
+from engine.keyboard import Keyboard, KeyCode
+from engine.popup import Popup
 
 import characters
 import blocks
@@ -13,9 +15,20 @@ class LevelEditor(Scene):
 
     def __init__(self):
         super().__init__()
+        self.__popup = Popup("Save Level", "Load Level", "QUIT")
+
+    def update(self, game):
+        kb = game.keyboard
+
+        if (kb.keyPressed(KeyCode.ESC)):
+            if self.paused:
+                self.paused = False
+                self.removeGameObjectsByType(Popup)
+            else:
+                self.paused = True
+                self.addGameObject(self.__popup)
 
     def load(self):
-        #self.__player = characters.Player(0,0)
         self.__player = characters.EditCursor(3, 0)
         self.addGameObject(DebugDisplay(0, self.game.height - 6))
         self.__gameArea = Rect(self.game.width, self.game.height - 9, 0, 0)
@@ -29,7 +42,6 @@ class LevelEditor(Scene):
 
     def generate(self, width, height):
 
-        # Build base layer of air and stone
         for row in range(0,height):
             for col in range(0, width * 3, 3):
                 if (row == 0):
@@ -50,4 +62,8 @@ class LevelEditor(Scene):
 
         # Add player
         self.addGameObject(self.__player, 1)
+
+
+
+
 

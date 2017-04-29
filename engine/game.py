@@ -48,7 +48,7 @@ class Game(object):
 
     def update(self):
         self.__keyboard.update()
-        self.__curScene.update()
+        self.__curScene.update(self)
         self.__curScene.updateGameObjects()
 
     def draw(self):

@@ -55,9 +55,6 @@ class Character(GameObject):
                 self.x = x
                 self.y = y
 
-    def getGame(self):
-        return self.__game
-
     @property
     def health(self):
         return self.__health
@@ -220,31 +217,31 @@ class EditCursor(Character):
 
     def update(self, game):
         super().update(game)
-        scene = self.getGame().curScene
+        scene = game.curScene
 
         kb = game.keyboard
         gO = ""
 
         if (kb.keyPressed(KeyCode.w)):
-            self.move(0, -self.yVel)
+            self.move(0, -self.yVel, game)
         elif (kb.keyPressed(KeyCode.s)):
-            self.move(0, self.yVel)
+            self.move(0, self.yVel, game)
         elif (kb.keyPressed(KeyCode.a)):
-            self.move(-self.xVel, 0)
+            self.move(-self.xVel, 0, game)
         elif (kb.keyPressed(KeyCode.d)):
-            self.move(self.xVel, 0)
+            self.move(self.xVel, 0, game)
         elif (kb.keyPressed(KeyCode.SPACEBAR)):
             gO = blocks.EditMarker(self.x, self.y)
         elif (kb.keyPressed(KeyCode.ZERO)):
-            scene.removeGameObjectsAtPos(self.x, self.y, self)
+            gO = blocks.Air(self.x, self.y)
         elif (kb.keyPressed(KeyCode.ONE)):
             gO = blocks.Dirt(self.x, self.y)
         elif (kb.keyPressed(KeyCode.TWO)):
-            gO = blocks.Air(self.x, self.y)
-        elif (kb.keyPressed(KeyCode.THREE)):
             gO = blocks.Stone(self.x, self.y)
-        elif (kb.keyPressed(KeyCode.FOUR)):
+        elif (kb.keyPressed(KeyCode.THREE)):
             gO = blocks.Wall(self.x, self.y)
+        elif (kb.keyPressed(KeyCode.FOUR)):
+            gO = Enemy(self.x, self.y)
         elif (kb.keyPressed(KeyCode.FIVE)):
             gO = Enemy(self.x, self.y)
 
@@ -256,6 +253,7 @@ class EditCursor(Character):
                     scene.addGameObject(gO, 1)
                 else:
                     scene.addGameObject(gO, 1)
+
             else:
                 if scene.hasAny(blocks.EditMarker):
                     editMarker = scene.getGameObjectsByType(blocks.EditMarker)[0]
@@ -276,10 +274,10 @@ class EditCursor(Character):
 
                     for y in range(smallY, largeY + 1):
                         for x in range(smallX, largeX + EditCursor.xVel, EditCursor.xVel):
-                            if (isinstance(gO, blocks.Dirt)):
-                                newGO = blocks.Dirt(x, y)
-                            elif (isinstance(gO, blocks.Air)):
+                            if (isinstance(gO, blocks.Air)):
                                 newGO = blocks.Air(x, y)
+                            elif (isinstance(gO, blocks.Dirt)):
+                                newGO = blocks.Dirt(x, y)
                             elif (isinstance(gO, blocks.Stone)):
                                 newGO = blocks.Stone(x, y)
                             elif (isinstance(gO, blocks.Wall)):
@@ -297,8 +295,8 @@ class EditCursor(Character):
                     scene.removeGameObjectsAtPos(self.x, self.y, self)
                     scene.addGameObject(gO)
 
-    def move(self, x, y):
-        scene = self.getGame().curScene
+    def move(self, x, y, game):
+        scene = game.curScene
 
         if (isinstance(scene, levelEditor.LevelEditor)):
             gameArea = scene.getGameArea()

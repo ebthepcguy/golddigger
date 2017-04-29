@@ -1,20 +1,34 @@
 import engine.gameObject, engine.screenBuffer, engine.game
+from engine.popup import Popup
 
 class Scene(object):
 
     def __init__(self):
         self.__gameObjects = [[] for _ in range(10)]
+        self.__paused = False
+
+    @property
+    def paused(self):
+        return self.__paused
+
+    @paused.setter
+    def paused(self, paused):
+        self.__paused = paused
 
     def load(self):
         pass
 
-    def update(self):
+    def update(self, game):
         pass
 
     def updateGameObjects(self):
         for layer in self.__gameObjects:
             for gO in layer:
-                gO.update(self.__game)
+                if not self.__paused:
+                    gO.update(self.__game)
+                elif isinstance(gO, Popup):
+                    if gO.focusedOn == True:
+                        gO.update(self.__game)
 
     def draw(self):
 
