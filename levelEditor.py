@@ -35,7 +35,7 @@ class LevelEditor(Scene):
                 if activeOption == 0:
                     self.startSaveLevelMenu(game)
                 elif activeOption == 1:
-                    pass
+                    self.startLoadLevelMenu(game)
                 elif activeOption == 2:
                     game.quit()
 
@@ -81,8 +81,14 @@ class LevelEditor(Scene):
         self.removeGameObjectsByType(characters.EditCursor)
         self.removeGameObjectsByType(Popup)
 
-        saveMenu = saveMenu.SaveMenu("Save Level: Choose your name.", self, "levels/levels")
+        saveMenu = saveMenu.SaveMenu("Save Level: Choose your name.", "levels/levels", self)
         game.loadScene(saveMenu)
+
+    def startLoadLevelMenu(self, game):
+        import loadMenu
+
+        loadMenu = loadMenu.LoadMenu("Load Level: Choose a level.", "levels/levels")
+        game.loadScene(loadMenu)
 
 
 

@@ -7,13 +7,13 @@ from debugDisplay import DebugDisplay
 
 class SaveMenu(Scene):
 
-    def __init__(self, title, objectToSave, fileName):
+    def __init__(self, title, fileName, objectToSave):
         super().__init__()
         image = Image.stringToImage(title)
         self.__title = GameObject(3, 1, image)
 
-        self.__objectToSave = objectToSave
         self.__fileName = fileName
+        self.__objectToSave = objectToSave
 
         self.__saveName = ""
         image = Image.stringToImage(self.__saveName)
@@ -27,9 +27,11 @@ class SaveMenu(Scene):
         
         if (kb.keyPressed(KeyCode.ENTER)):
             self.save(game)
-        
-        for key in kb.getPressedKeys():
-            self.__saveName += chr(key)
+        if (kb.keyPressed(KeyCode.BACKSPACE)):
+            self.__saveName = self.__saveName[:-1]
+        else:
+            for key in kb.getPressedKeys():
+                self.__saveName += chr(key)
 
         image = Image.stringToImage("Name  :" + self.__saveName)
         
@@ -39,11 +41,11 @@ class SaveMenu(Scene):
         import pickle, shelve
         import levelEditor
 
-        shelve = shelve.open(self.__fileName)
-        shelve["self.__saveName"] = self.__objectToSave
+        s = shelve.open(self.__fileName)
+        s[self.__saveName] = self.__objectToSave
 
-        shelve.sync()
-        shelve.close()
+        s.sync()
+        s.close()
 
         editor = self.__objectToSave
         game.loadScene(editor)

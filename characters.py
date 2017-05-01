@@ -172,37 +172,40 @@ class Enemy(Character):
 
     def update(self, game):
         super().update(game)
+        scene = game.curScene
 
-        # Increment time until enemy will atempt to move again
-        self.__walkTimer += game.deltaTime
+        if ( isinstance(scene, level.Level) ):
 
-        self.testFalling()
+            # Increment time until enemy will atempt to move again
+            self.__walkTimer += game.deltaTime
 
-        if(self.falling):
-            self.fallTimer += game.deltaTime
+            self.testFalling()
 
-        if(self.fallTimer >= self.fallSpeed):
-            self.move(0,1)
-            self.fallTimer = 0
-        elif(self.__walkTimer >= self.WALK_SPEED):
-            self.__walkTimer = 0
+            if(self.falling):
+                self.fallTimer += game.deltaTime
 
-            # Movement AI
-            # Move until collision then switch directions
-            gameObjects = game.curScene.getGameObjectsAtPos(self.x + self.__xVel, self.y)
-            canMove = True
-            for gO in gameObjects:
-                if(gO.collision and not isinstance(gO, Player)):
-                    # If we cannot move switch directions
-                    canMove = False
-                    self.__xVel *= -1
-                    # Update Image
-                    if(self.__xVel > 0):
-                        self.image = self.RIGHT_IMAGE
-                    elif(self.__xVel < 0):
-                        self.image = self.LEFT_IMAGE
-            if(canMove):
-                self.move(self.__xVel , 0)
+            if(self.fallTimer >= self.fallSpeed):
+                self.move(0,1)
+                self.fallTimer = 0
+            elif(self.__walkTimer >= self.WALK_SPEED):
+                self.__walkTimer = 0
+
+                # Movement AI
+                # Move until collision then switch directions
+                gameObjects = game.curScene.getGameObjectsAtPos(self.x + self.__xVel, self.y)
+                canMove = True
+                for gO in gameObjects:
+                    if(gO.collision and not isinstance(gO, Player)):
+                        # If we cannot move switch directions
+                        canMove = False
+                        self.__xVel *= -1
+                        # Update Image
+                        if(self.__xVel > 0):
+                            self.image = self.RIGHT_IMAGE
+                        elif(self.__xVel < 0):
+                            self.image = self.LEFT_IMAGE
+                if(canMove):
+                    self.move(self.__xVel , 0)
 
 
 
@@ -235,14 +238,22 @@ class EditCursor(Character):
         elif (kb.keyPressed(KeyCode.ZERO)):
             gO = blocks.Air(self.x, self.y)
         elif (kb.keyPressed(KeyCode.ONE)):
-            gO = blocks.Dirt(self.x, self.y)
-        elif (kb.keyPressed(KeyCode.TWO)):
-            gO = blocks.Stone(self.x, self.y)
-        elif (kb.keyPressed(KeyCode.THREE)):
             gO = blocks.Wall(self.x, self.y)
+        elif (kb.keyPressed(KeyCode.TWO)):
+            gO = blocks.Dirt(self.x, self.y)
+        elif (kb.keyPressed(KeyCode.THREE)):
+            gO = blocks.Stone(self.x, self.y)
         elif (kb.keyPressed(KeyCode.FOUR)):
-            gO = Enemy(self.x, self.y)
+            gO = blocks.Gold(self.x, self.y)
         elif (kb.keyPressed(KeyCode.FIVE)):
+            gO = blocks.GoldPickup(self.x, self.y)
+        elif (kb.keyPressed(KeyCode.SIX)):
+            gO = blocks.HealthPickup(self.x, self.y)
+        elif (kb.keyPressed(KeyCode.SEVEN)):
+            gO = blocks.PlayerSpawn(self.x, self.y)
+        elif (kb.keyPressed(KeyCode.EIGHT)):
+            gO = blocks.Door(self.x, self.y)
+        elif (kb.keyPressed(KeyCode.NINE)):
             gO = Enemy(self.x, self.y)
 
         newGO = ""
@@ -276,12 +287,22 @@ class EditCursor(Character):
                         for x in range(smallX, largeX + EditCursor.xVel, EditCursor.xVel):
                             if (isinstance(gO, blocks.Air)):
                                 newGO = blocks.Air(x, y)
+                            elif (isinstance(gO, blocks.Wall)):
+                                newGO = blocks.Wall(x, y)
                             elif (isinstance(gO, blocks.Dirt)):
                                 newGO = blocks.Dirt(x, y)
                             elif (isinstance(gO, blocks.Stone)):
                                 newGO = blocks.Stone(x, y)
-                            elif (isinstance(gO, blocks.Wall)):
-                                newGO = blocks.Wall(x, y)
+                            elif (isinstance(gO, blocks.Gold)):
+                                newGO = blocks.Gold(x, y)
+                            elif (isinstance(gO, blocks.GoldPickup)):
+                                newGO = blocks.GoldPickup(x, y)
+                            elif (isinstance(gO, blocks.HealthPickup)):
+                                newGO = blocks.HealthPickup(x, y)
+                            elif (isinstance(gO, blocks.PlayerSpawn)):
+                                newGO = blocks.PlayerSpawn(x, y)
+                            elif (isinstance(gO, blocks.Door)):
+                                newGO = blocks.Door(x, y)
                             elif (isinstance(gO, Enemy)):
                                 newGO = Enemy(x, y)
                             """
