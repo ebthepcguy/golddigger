@@ -239,18 +239,10 @@ class EditCursor(Character):
         elif (kb.keyPressed(KeyCode.TWO)):
             gO = blocks.Stone(self.x, self.y)
         elif (kb.keyPressed(KeyCode.THREE)):
-            gO = blocks.Gold(self.x, self.y)
-        elif (kb.keyPressed(KeyCode.FOUR)):
             gO = blocks.Wall(self.x, self.y)
+        elif (kb.keyPressed(KeyCode.FOUR)):
+            gO = Enemy(self.x, self.y)
         elif (kb.keyPressed(KeyCode.FIVE)):
-            gO = blocks.GoldPickup(self.x, self.y)
-        elif (kb.keyPressed(KeyCode.SIX)):
-            gO = blocks.HealthPickup(self.x, self.y)
-        elif (kb.keyPressed(KeyCode.SEVEN)):
-            gO = blocks.PlayerSpawn(self.x, self.y)
-        elif (kb.keyPressed(KeyCode.EIGHT)):
-            gO = blocks.Door(self.x, self.y)
-        elif (kb.keyPressed(KeyCode.NINE)):
             gO = Enemy(self.x, self.y)
 
         newGO = ""
@@ -288,18 +280,8 @@ class EditCursor(Character):
                                 newGO = blocks.Dirt(x, y)
                             elif (isinstance(gO, blocks.Stone)):
                                 newGO = blocks.Stone(x, y)
-                            elif (isinstance(gO, blocks.Gold)):
-                                newGO = blocks.Gold(x, y)
                             elif (isinstance(gO, blocks.Wall)):
                                 newGO = blocks.Wall(x, y)
-                            elif (isinstance(gO, blocks.GoldPickup)):
-                                newGO = blocks.GoldPickup(x, y)
-                            elif (isinstance(gO, blocks.HealthPickup)):
-                                newGO = blocks.HealthPickup(x, y)
-                            elif (isinstance(gO, blocks.PlayerSpawn)):
-                                newGO = blocks.PlayerSpawn(x, y)
-                            elif (isinstance(gO, blocks.Door)):
-                                newGO = blocks.Door(x, y)
                             elif (isinstance(gO, Enemy)):
                                 newGO = Enemy(x, y)
                             """
