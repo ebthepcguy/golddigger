@@ -28,11 +28,25 @@ class LevelEditor(Scene):
                 self.paused = True
                 self.addGameObject(self.__popup)
 
+        if self.hasAny(Popup):
+            if (kb.keyPressed(KeyCode.ENTER)):
+                activeOption = self.__popup.activeOption
+
+                if activeOption == 0:
+                    self.startSaveLevelMenu(game)
+                elif activeOption == 1:
+                    pass
+                elif activeOption == 2:
+                    game.quit()
+
     def load(self):
-        self.__player = characters.EditCursor(3, 0)
-        self.addGameObject(DebugDisplay(0, self.game.height - 6))
         self.__gameArea = Rect(self.game.width, self.game.height - 9, 0, 0)
-        self.generate(self.__gameArea.width, self.__gameArea.height)
+        self.__player = characters.EditCursor(3, 0)
+        if ( self.len() == 0 ):
+            self.generate(self.__gameArea.width, self.__gameArea.height)
+        self.addGameObject(DebugDisplay(0, self.game.height - 6))
+        # Add player
+        self.addGameObject(self.__player, 1)
 
     def getPlayer(self):
         return self.__player
@@ -60,8 +74,15 @@ class LevelEditor(Scene):
 
                 self.addGameObject(block)
 
-        # Add player
-        self.addGameObject(self.__player, 1)
+    def startSaveLevelMenu(self, game):
+        import saveMenu
+
+        self.paused = False
+        self.removeGameObjectsByType(characters.EditCursor)
+        self.removeGameObjectsByType(Popup)
+
+        saveMenu = saveMenu.SaveMenu("Save Level: Choose your name.", self, "levels/levels")
+        game.loadScene(saveMenu)
 
 
 

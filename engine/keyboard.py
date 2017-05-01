@@ -23,6 +23,9 @@ class Keyboard(object):
         else:
             return False
 
+    def getPressedKeys(self):
+        return self.__pressedKeys
+
 class KeyCode(Enum):
     # Generate Enums for keys a=97 through z= 123
     a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z = range(97, 123)

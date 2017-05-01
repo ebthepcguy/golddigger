@@ -4,7 +4,7 @@ from engine.gameObject import GameObject
 from engine.keyboard import Keyboard, KeyCode
 from engine.util import clamp
 
-class Menu(Scene):
+class MainMenu(Scene):
 
     def __init__(self):
         super().__init__()
@@ -86,7 +86,7 @@ class MenuSelect(GameObject):
         kb = game.keyboard
 
         # To remove later: Needed for testing
-        #self.startEditor(game)
+        self.startEditor(game)
 
         if(kb.keyPressed( KeyCode.w )):
             self.move(0,-1)
