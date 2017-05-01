@@ -86,7 +86,7 @@ class MenuSelect(GameObject):
         kb = game.keyboard
 
         # To remove later: Needed for testing
-        self.startEditor(game)
+        #self.startEditor(game)
 
         if(kb.keyPressed( KeyCode.w )):
             self.move(0,-1)
