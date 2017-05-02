@@ -1,12 +1,19 @@
 TODO
   Move between levels
-  Enemies drop gold when killed
   Quit to menu
   End screen/winning
     - When last level finishes
 
   Load level screen
   Hit animation/sound
+    - hit sound
+    - hurt sound
+    - jump
+    - pick up sound
+    x damage block sound
+    - break block sound
+    - move through menu
+
 
 
   Clean up code
