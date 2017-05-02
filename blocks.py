@@ -95,9 +95,22 @@ class Stone(Block):
             self.fall()
 
 class Gold(Block):
-        def __init__(self, x, y):
+        def __init__(self, x, y, health = 1):
             image = Image([[Tile("["), Tile("$"), Tile("]")]])
             super().__init__(x, y, image)
+            self.__health = health
+
+        def setHealth(self, health):
+            self.__health = health
+
+        def getHealth(self):
+            return self.__health
+
+        def update(self, game):
+            scene = game.curScene
+            if(self.__health <= 0):
+                scene.removeGameObject(self)
+                scene.addGameObject(GoldPickup(self.x, self.y))
 
 class Wall(Block):
     def __init__(self, x, y):

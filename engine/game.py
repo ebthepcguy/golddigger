@@ -3,6 +3,8 @@ import os, time
 
 class Game(object):
 
+    MIN_DELTA_TIME = 0.15
+
     def __init__(self, title, width, height):
         self.__title = title
         self.__width = width
@@ -35,8 +37,8 @@ class Game(object):
             # Artificially limit framerate to reduce flashing
             # Frame must take atleast 0.0333 seconds to update and draw
             tempDeltaTime = time.time() - prevTime
-            if(tempDeltaTime < 0.00):
-                time.sleep(0.00 - tempDeltaTime)
+            if(tempDeltaTime < self.MIN_DELTA_TIME):
+                time.sleep(self.MIN_DELTA_TIME - tempDeltaTime)
 
     def quit(self):
         self.__running = False

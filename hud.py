@@ -14,7 +14,7 @@ class Hud(GameObject):
 
         image = ""
         image += "Health " + str(player.health) + "/" + str(player.maxHealth)
-        image += " Gold 0"
+        image += " Gold " + str(player.gold)
         image += "\n"
 
 

@@ -28,8 +28,8 @@ class ScreenBuffer(object):
         printString = printString[:len(printString) - 2]
 
         # Clears the screen WINDOWS ONLY
-        #os.system("CLS")
-        print("\033[F")
+        os.system("CLS")
+        #print("\033[F")
         print(printString, end="")
 
         self.clear()

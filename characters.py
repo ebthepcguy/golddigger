@@ -21,7 +21,7 @@ class Character(GameObject):
     def update(self, game):
         self.__game = game
 
-        if(self.health == 0):
+        if(self.health <= 0):
             game.curScene.removeGameObject(self)
 
     def move(self, x, y):
@@ -48,8 +48,9 @@ class Character(GameObject):
 
                     elif(isinstance(gO, blocks.Gold)):
                         gO.setHealth( gO.getHealth() - 1 )
-                    elif(isinstance(gO, blocks.Gold)):
-                        gO.setHealth( gO.getHealth() - 1 )
+                    elif(isinstance(gO, blocks.GoldPickup)):
+                        scene.removeGameObject(gO)
+                        self.gold +=1
 
 
                 if(isinstance(gO, Character)):
