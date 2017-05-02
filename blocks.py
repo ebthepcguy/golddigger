@@ -89,7 +89,7 @@ class Stone(Block):
 
     def update(self, game):
         super(Stone, self).update(game)
-        
+
         self.testFalling()
         if(self.isFalling()):
             self.fall()
@@ -144,4 +144,3 @@ class EditMarker(Block):
     def __init__(self, x, y):
         image = Image.stringToImage(" *")
         super().__init__(x, y, image)
-
