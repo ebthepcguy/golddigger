@@ -5,7 +5,7 @@ from engine.tile import Tile
 from engine.keyboard import Keyboard, KeyCode
 from engine.util import clamp
 
-import level, blocks, levelEditor, copy
+import level, blocks, levelEditor, copy, mainMenu
 
 class Character(GameObject):
 
@@ -22,23 +22,28 @@ class Character(GameObject):
     def update(self, game):
         self.__game = game
 
+        # TODO: CHANGE
         if(self.health <= 0):
-            os.system('cls')
+            if(isinstance(self, Player)):
+                import os
+                os.system('cls')
+                print("""
+
+                 _____                        _____
+                |  __ \                      |  _  |
+                | |  \/ __ _ _ __ ___   ___  | | | |_   _____ _ __
+                | | __ / _` | '_ ` _ \ / _ \ | | | \ \ / / _ \ '__|
+                | |_\ \ (_| | | | | | |  __/ \ \_/ /\ V /  __/ |
+                 \____/\__,_|_| |_| |_|\___|  \___/  \_/ \___|_|
+
+                """)
+
+                print("         ------------------------------------------------------")
+                print("                     You were killed by the enemy.")
+                input(" Press enter to quit to main menu")
+                game.loadScene(mainMenu.MainMenu())
             game.curScene.removeGameObject(self)
-            print("""
 
-             _____                        _____
-            |  __ \                      |  _  |
-            | |  \/ __ _ _ __ ___   ___  | | | |_   _____ _ __
-            | | __ / _` | '_ ` _ \ / _ \ | | | \ \ / / _ \ '__|
-            | |_\ \ (_| | | | | | |  __/ \ \_/ /\ V /  __/ |
-             \____/\__,_|_| |_| |_|\___|  \___/  \_/ \___|_|
-
-            """)
-
-            print("         ------------------------------------------------------")
-            print("                     You were killed by the enemy.")
-            input("    
 
     def move(self, x, y):
         scene = self.__game.curScene
