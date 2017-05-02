@@ -85,9 +85,6 @@ class MenuSelect(GameObject):
     def update(self, game):
         kb = game.keyboard
 
-        # To remove later: Needed for testing
-        #self.startEditor(game)
-
         if(kb.keyPressed( KeyCode.w )):
             self.move(0,-1)
         elif(kb.keyPressed( KeyCode.s )):
@@ -128,8 +125,17 @@ class MenuSelect(GameObject):
         self.__menuPosY = clamp(self.__menuPosY + y, 0, 2)
 
     def startGame(self, game):
+        import pickle, shelve
         import level
+
+        s = shelve.open("levels/levels")
+
+        data = s["level_01"]
         level = level.Level()
+        level.gameObjects = data
+
+        s.close()
+
         game.loadScene(level)
 
     def startEditor(self, game):

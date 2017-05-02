@@ -67,7 +67,9 @@ class LoadMenu(Scene):
 
         data = s[nameOfData]
 
-        editor = data
+        editor = levelEditor.LevelEditor()
+        editor.gameObjects = data
+        
         s.close()
 
         game.loadScene(editor)

@@ -8,6 +8,14 @@ class Scene(object):
         self.__paused = False
 
     @property
+    def gameObjects(self):
+        return self.__gameObjects
+
+    @gameObjects.setter
+    def gameObjects(self, gameObjects):
+        self.__gameObjects = gameObjects
+
+    @property
     def paused(self):
         return self.__paused
 

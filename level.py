@@ -15,17 +15,26 @@ class Level(Scene):
     def __init__(self):
         super().__init__()
 
+    def update(self, game):
+        self.removeGameObjectsByType(blocks.Air)
+
     def load(self):
 
-        self.__player = characters.Player(3,1)
+        self.__gameArea = Rect(self.game.width, self.game.height - 9, 0, 0)
+
         self.addGameObject(DebugDisplay(0, self.game.height - 6))
 
-        self.__gameArea = Rect(self.game.width, self.game.height - 9, 0, 0)
-        self.generate(self.__gameArea.width, self.__gameArea.height)
-
         self.addGameObject(Hud(0, self.__gameArea.height))
-        self.addGameObject(characters.Enemy(15,3))
 
+        if self.hasAny(blocks.PlayerSpawn):
+            playerSpawn = self.getGameObjectsByType(blocks.PlayerSpawn)
+            self.__player = characters.Player(playerSpawn[0].x, playerSpawn[0].y)
+            self.removeGameObjectsByType(blocks.PlayerSpawn)
+        else :
+            self.__player = characters.Player(3,1)
+
+        self.addGameObject(self.__player)
+        self.removeGameObjectsByType(blocks.Air)
 
     def getPlayer(self):
         return self.__player

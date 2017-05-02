@@ -42,7 +42,7 @@ class SaveMenu(Scene):
         import levelEditor
 
         s = shelve.open(self.__fileName)
-        s[self.__saveName] = self.__objectToSave
+        s[self.__saveName] = self.__objectToSave.gameObjects
 
         s.sync()
         s.close()

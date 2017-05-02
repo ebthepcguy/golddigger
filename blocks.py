@@ -15,10 +15,6 @@ class Block(GameObject):
     def update(self, game):
         self.__game = game
 
-
-    ###########################################################################
-    # This code is from characters. I would like to see all GameObjects get
-    # this (or something like this) in the future.
     def fall(self):
         scene = self.__game.curScene
 
@@ -53,7 +49,6 @@ class Block(GameObject):
 
     def isFalling(self):
         return self.__falling
-    ##################################################################################
 
 class Air(Block):
     def __init__(self, x, y):
