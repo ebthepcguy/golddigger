@@ -35,8 +35,8 @@ class Game(object):
             # Artificially limit framerate to reduce flashing
             # Frame must take atleast 0.0333 seconds to update and draw
             tempDeltaTime = time.time() - prevTime
-            if(tempDeltaTime < 0.15):
-                time.sleep(0.15 - tempDeltaTime)
+            if(tempDeltaTime < 0.00):
+                time.sleep(0.00 - tempDeltaTime)
 
     def quit(self):
         self.__running = False
