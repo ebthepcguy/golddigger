@@ -42,7 +42,11 @@ class Character(GameObject):
                 print("                     You were killed by the enemy.")
                 input(" Press enter to quit to main menu")
                 game.loadScene(mainMenu.MainMenu())
+            if(isinstance(self, Enemy)):
+                game.curScene.addGameObject(blocks.GoldPickup(self.x, self.y))
+
             game.curScene.removeGameObject(self)
+
 
 
     def move(self, x, y):
