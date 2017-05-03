@@ -116,7 +116,11 @@ class MenuSelect(GameObject):
             self.startEditor(game)
 
         elif(self.__menuPosX == 0 and self.__menuPosY == 1):
-            pass
+            import loadMenu
+
+            loadMenu = loadMenu.LoadMenu("Load Game: Choose a game.", game.SAVE_FOLDER + "/games", game.curScene)
+            game.loadScene(loadMenu)
+
         elif(self.__menuPosX == 1 and self.__menuPosY == 1):
             game.quit()
 
@@ -128,7 +132,7 @@ class MenuSelect(GameObject):
         import pickle, shelve
         import level
 
-        s = shelve.open("levels/levels")
+        s = shelve.open(game.SAVE_FOLDER + "/levels")
 
         data = s["level_01"]
         level = level.Level()
@@ -142,4 +146,3 @@ class MenuSelect(GameObject):
         import levelEditor
         editor = levelEditor.LevelEditor()
         game.loadScene(editor)
-

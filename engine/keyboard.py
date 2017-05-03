@@ -9,7 +9,7 @@ class Keyboard(object):
     def update(self):
         self.__pressedKeys = []
         # Add keys to the list while there are keys in the buffer
-        while(msvcrt.kbhit()):
+        if(msvcrt.kbhit()):
             self.__pressedKeys.append(ord(msvcrt.getch()))
 
     def keyPressed(self, key):

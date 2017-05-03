@@ -3,6 +3,9 @@ import os, time
 
 class Game(object):
 
+    SAVE_FOLDER = "save_game_files"
+    GAME_FILE = "/games"
+    LEVEL_FILE ="/levels"
     MIN_DELTA_TIME = 0.15
 
     def __init__(self, title, width, height):
@@ -44,6 +47,9 @@ class Game(object):
         self.__running = False
 
     def loadScene(self, scene):
+        # Update keyboard to clear out any keys pressed from last scene
+        self.__keyboard.update()
+
         scene.game = self
         self.__curScene = scene
         self.__curScene.load()

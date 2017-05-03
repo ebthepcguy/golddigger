@@ -5,8 +5,7 @@ from engine.util import Rect
 from engine.keyboard import Keyboard, KeyCode
 from engine.popup import Popup
 
-import characters
-import blocks
+import characters, blocks, mainMenu
 from debugDisplay import DebugDisplay
 
 class LevelEditor(Scene):
@@ -15,7 +14,7 @@ class LevelEditor(Scene):
 
     def __init__(self):
         super().__init__()
-        self.__popup = Popup("Save Level", "Load Level", "QUIT")
+        self.__popup = Popup("Save Level", "Load Level", "QUIT to Main Menu")
 
     def update(self, game):
         kb = game.keyboard
@@ -37,7 +36,7 @@ class LevelEditor(Scene):
                 elif activeOption == 1:
                     self.startLoadLevelMenu(game)
                 elif activeOption == 2:
-                    game.quit()
+                    game.loadScene(mainMenu.MainMenu())
 
     def load(self):
         self.__gameArea = Rect(self.game.width, self.game.height - 9, 0, 0)
@@ -63,7 +62,7 @@ class LevelEditor(Scene):
                 elif ( col == 0 or col == width - 3):
                     block = blocks.Wall(col, row)
                 elif (row in range(0, self.AIR_LEVEL)):
-                    block = blocks.Air(col, row)
+                    pass
                 elif (row == height - 1):
                     if(col == int(width / 3) -1):
                         block = blocks.Door(col, row)
@@ -81,16 +80,15 @@ class LevelEditor(Scene):
         self.removeGameObjectsByType(characters.EditCursor)
         self.removeGameObjectsByType(Popup)
 
-        saveMenu = saveMenu.SaveMenu("Save Level: Choose your name.", "levels/levels", self)
+        saveMenu = saveMenu.SaveMenu("Save Level: Choose your name.", game.SAVE_FOLDER + "/levels", self)
         game.loadScene(saveMenu)
 
     def startLoadLevelMenu(self, game):
         import loadMenu
 
-        loadMenu = loadMenu.LoadMenu("Load Level: Choose a level.", "levels/levels")
+        self.paused = False
+        self.removeGameObjectsByType(characters.EditCursor)
+        self.removeGameObjectsByType(Popup)
+
+        loadMenu = loadMenu.LoadMenu("Load Level: Choose a level.", game.SAVE_FOLDER + "/levels", self)
         game.loadScene(loadMenu)
-
-
-
-
-

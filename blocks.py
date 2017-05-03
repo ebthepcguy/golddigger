@@ -50,11 +50,6 @@ class Block(GameObject):
     def isFalling(self):
         return self.__falling
 
-class Air(Block):
-    def __init__(self, x, y):
-        image = Image([[Tile(" "), Tile(" "), Tile(" ")]])
-        super().__init__(x, y, image, False)
-
 class Dirt(Block):
 
     FULL = Image([[Tile("▒"), Tile("▒"), Tile("▒")]])
