@@ -5,7 +5,7 @@ from engine.util import Rect
 from engine.keyboard import Keyboard, KeyCode
 from engine.popup import Popup
 
-import characters, blocks, mainMenu
+import characters, blocks, menu
 from debugDisplay import DebugDisplay
 
 class LevelEditor(Scene):
@@ -36,9 +36,11 @@ class LevelEditor(Scene):
                 elif activeOption == 1:
                     self.startLoadLevelMenu(game)
                 elif activeOption == 2:
-                    game.loadScene(mainMenu.MainMenu())
+                    game.loadScene(menu.MainMenu())
 
     def load(self):
+        super().load()
+
         self.__gameArea = Rect(self.game.width, self.game.height - 9, 0, 0)
         self.__player = characters.EditCursor(3, 0)
         if ( self.len() == 0 ):
@@ -46,6 +48,8 @@ class LevelEditor(Scene):
         self.addGameObject(DebugDisplay(0, self.game.height - 6))
         # Add player
         self.addGameObject(self.__player, 1)
+
+        self.originalGos = self.gameObjects
 
     def getPlayer(self):
         return self.__player
@@ -74,21 +78,21 @@ class LevelEditor(Scene):
                 self.addGameObject(block)
 
     def startSaveLevelMenu(self, game):
-        import saveMenu
 
         self.paused = False
         self.removeGameObjectsByType(characters.EditCursor)
         self.removeGameObjectsByType(Popup)
 
-        saveMenu = saveMenu.SaveMenu("Save Level: Choose your name.", game.SAVE_FOLDER + "/levels", self)
+        saveMenu = menu.SaveMenu("Save Your Custom Level: Enter a name.", self)
+        saveMenu.fileName = menu.Menu.LEVEL_FILE
         game.loadScene(saveMenu)
 
     def startLoadLevelMenu(self, game):
-        import loadMenu
 
         self.paused = False
         self.removeGameObjectsByType(characters.EditCursor)
         self.removeGameObjectsByType(Popup)
 
-        loadMenu = loadMenu.LoadMenu("Load Level: Choose a level.", game.SAVE_FOLDER + "/levels", self)
+        loadMenu = menu.LoadMenu("Load Custom Level:", self)
+        loadMenu.fileName = menu.Menu.LEVEL_FILE
         game.loadScene(loadMenu)

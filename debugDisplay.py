@@ -8,6 +8,7 @@ class DebugDisplay(GameObject):
         super().__init__(x, y, Image([[]]), collision)
 
     def update(self, game):
+        
         scene = game.curScene
         dt = game.deltaTime
 

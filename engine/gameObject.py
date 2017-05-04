@@ -1,3 +1,4 @@
+from engine.util import Rect
 import engine.image, engine.util, engine.tile, engine.util
 
 class GameObject(object):
@@ -53,7 +54,7 @@ class GameObject(object):
 
     def generateRect(self):
 
-        # If the object has know image, give it a 1 by 1 Rectangle
+        # If the object has no image, give it a 1 by 1 Rectangle
         if(self.__image is None):
             self.__rect = Rect(1,1)
         else:

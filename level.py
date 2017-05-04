@@ -5,7 +5,7 @@ from engine.util import Rect
 from engine.keyboard import Keyboard, KeyCode
 from engine.popup import Popup
 
-import characters, blocks, mainMenu, time
+import characters, blocks, menu, time
 from debugDisplay import DebugDisplay
 from hud import Hud
 
@@ -37,9 +37,10 @@ class Level(Scene):
                 elif activeOption == 1:
                     self.loadGameMenu(game)
                 elif activeOption == 2:
-                    game.loadScene(mainMenu.MainMenu())
+                    game.loadScene(menu.MainMenu())
 
     def load(self):
+        super().load()
         self.__gameArea = Rect(self.game.width, self.game.height - 9, 0, 0)
 
         if ( self.hasAny(blocks.PlayerSpawn) ):
@@ -56,6 +57,8 @@ class Level(Scene):
         self.addGameObject(DebugDisplay(0, self.game.height - 6))
 
         self.addGameObject(Hud(0, self.__gameArea.height))
+
+        self.originalGos = self.gameObjects
 
     def getPlayer(self):
         return self.__player
@@ -96,19 +99,19 @@ class Level(Scene):
         self.addGameObject(block)
 
     def saveGameMenu(self, game):
-        import saveMenu
 
         self.paused = False
         self.removeGameObjectsByType(Popup)
 
-        saveMenu = saveMenu.SaveMenu("Save Game: Choose your name.", game.SAVE_FOLDER + "/games", self)
+        saveMenu = menu.SaveMenu("Save Your Game: Enter a name.", self)
+        saveMenu.fileName = menu.Menu.GAME_FILE
         game.loadScene(saveMenu)
 
     def loadGameMenu(self, game):
-        import loadMenu
 
         self.paused = False
         self.removeGameObjectsByType(Popup)
 
-        loadMenu = loadMenu.LoadMenu("Load Game: Choose a game.", game.SAVE_FOLDER + "/games", self)
+        loadMenu = menu.LoadMenu("Load Game:", self)
+        loadMenu.fileName = menu.Menu.GAME_FILE
         game.loadScene(loadMenu)

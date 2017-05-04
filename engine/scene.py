@@ -6,6 +6,7 @@ class Scene(object):
     def __init__(self):
         self.__gameObjects = [[] for _ in range(10)]
         self.__paused = False
+        self.__originalGameObjects = None
 
     @property
     def gameObjects(self):
@@ -22,6 +23,14 @@ class Scene(object):
     @paused.setter
     def paused(self, paused):
         self.__paused = paused
+
+    @property
+    def originalGos(self):
+        return self.__originalGos
+
+    @originalGos.setter
+    def originalGos(self, originalGos):
+        self.__originalGos = originalGos
 
     def load(self):
         pass

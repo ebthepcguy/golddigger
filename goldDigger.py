@@ -1,9 +1,9 @@
 from engine.game import Game
-from level import Level
-from mainMenu import MainMenu
+import menu
 
 def main():
     game = Game("Gold Digger", 75,40)
-    menu = MainMenu()
-    game.run(menu)
+    m = menu.MainMenu()
+    game.run(m)
+
 main()

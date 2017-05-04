@@ -4,8 +4,9 @@ from engine.image import Image
 from engine.tile import Tile
 from engine.keyboard import Keyboard, KeyCode
 from engine.util import clamp
+from debugDisplay import DebugDisplay
 
-import level, blocks, levelEditor, copy, mainMenu
+import level, blocks, levelEditor, copy, menu
 
 class Character(GameObject):
 
@@ -41,7 +42,10 @@ class Character(GameObject):
                 print("         ------------------------------------------------------")
                 print("                     You were killed by the enemy.")
                 input(" Press enter to quit to main menu")
-                game.loadScene(mainMenu.MainMenu())
+
+                game.curScene.removeGameObjectsByType(DebugDisplay)
+                game.loadScene(menu.MainMenu())
+                
             if(isinstance(self, Enemy)):
                 game.curScene.addGameObject(blocks.GoldPickup(self.x, self.y))
 
