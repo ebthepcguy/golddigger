@@ -12,83 +12,15 @@ class Character(GameObject):
 
     def __init__(self, x, y, image, maxHealth):
         super().__init__(x, y, image)
-        self.maxHealth = maxHealth
-        self.health = maxHealth
+        self.__maxHealth = maxHealth
+        self.__health = self.__maxHealth
         self.__game = None
         self.__fallTimer = 0
         self.__falling = False
-        self.__canDig = False
         self.__canAttack = False
 
     def update(self, game):
         self.__game = game
-
-        # TODO: CHANGE
-        if(self.health <= 0):
-            if(isinstance(self, Player)):
-                import os
-                os.system('cls')
-                print("""
-
-                 _____                        _____
-                |  __ \                      |  _  |
-                | |  \/ __ _ _ __ ___   ___  | | | |_   _____ _ __
-                | | __ / _` | '_ ` _ \ / _ \ | | | \ \ / / _ \ '__|
-                | |_\ \ (_| | | | | | |  __/ \ \_/ /\ V /  __/ |
-                 \____/\__,_|_| |_| |_|\___|  \___/  \_/ \___|_|
-
-                """)
-
-                print("         ------------------------------------------------------")
-                print("                     You were killed by the enemy.")
-                input(" Press enter to quit to main menu")
-
-                game.curScene.removeGameObjectsByType(DebugDisplay)
-                game.loadScene(menu.MainMenu())
-                
-            if(isinstance(self, Enemy)):
-                game.curScene.addGameObject(blocks.GoldPickup(self.x, self.y))
-
-            game.curScene.removeGameObject(self)
-
-
-
-    def move(self, x, y):
-        scene = self.__game.curScene
-
-        if(isinstance(scene, level.Level)):
-            gameArea = scene.getGameArea()
-
-            x = clamp( self.x + x, gameArea.x, gameArea.width )
-            y = clamp( self.y + y, gameArea.y, gameArea.height )
-
-
-            gameObjects = scene.getGameObjectsAtPos(x, y)
-
-            canMove = True
-
-            for gO in gameObjects:
-                if(gO.collision):
-                    canMove = False
-
-                if(self.canDig):
-                    if(isinstance(gO, blocks.Dirt)):
-                        gO.setHealth( gO.getHealth() - 1 )
-
-                    elif(isinstance(gO, blocks.Gold)):
-                        gO.setHealth( gO.getHealth() - 1 )
-                    elif(isinstance(gO, blocks.GoldPickup)):
-                        scene.removeGameObject(gO)
-                        self.gold +=1
-
-
-                if(isinstance(gO, Character)):
-                    gO.health -= 1
-
-
-            if(canMove):
-                self.x = x
-                self.y = y
 
     @property
     def health(self):
@@ -123,14 +55,6 @@ class Character(GameObject):
         self.__fallTimer = fallTimer
 
     @property
-    def canDig(self):
-        return self.__canDig
-
-    @canDig.setter
-    def canDig(self, canDig):
-        self.__canDig = canDig
-
-    @property
     def canAttack(self):
         return self.__canDig
 
@@ -146,6 +70,9 @@ class Character(GameObject):
     def game(self, game):
         self.__game = game
 
+    def move(self, x, y):
+        pass
+
     def testFalling(self):
         scene = self.__game.curScene
         gameObjects = scene.getGameObjectsAtPos(self.x, self.y + 1)
@@ -155,8 +82,6 @@ class Character(GameObject):
                 isFalling = False
 
         self.falling = isFalling
-
-
 
 class Player(Character):
 
@@ -171,11 +96,12 @@ class Player(Character):
     def __init__(self, x, y, maxHealth = 3):
         super().__init__(x, y, self.NORAML_IMAGE, maxHealth)
         self.__gold = 0
-        self.canDig = True
+        self.__level = 1
         self.canAttack = True
 
     def update(self, game):
         super().update(game)
+
         kb = game.keyboard
 
         self.testFalling()
@@ -198,6 +124,30 @@ class Player(Character):
         elif(kb.keyPressed( KeyCode.d )):
             self.move(self.xVel,0)
 
+        # TODO: CHANGE
+        if(self.health <= 0):
+            import os
+            os.system('cls')
+            print("""
+
+             _____                        _____
+            |  __ \                      |  _  |
+            | |  \/ __ _ _ __ ___   ___  | | | |_   _____ _ __
+            | | __ / _` | '_ ` _ \ / _ \ | | | \ \ / / _ \ '__|
+            | |_\ \ (_| | | | | | |  __/ \ \_/ /\ V /  __/ |
+             \____/\__,_|_| |_| |_|\___|  \___/  \_/ \___|_|
+
+            """)
+
+            print("         ------------------------------------------------------")
+            print("                     You were killed by the enemy.")
+            input(" Press enter to quit to main menu")
+
+            game.curScene.removeGameObjectsByType(DebugDisplay)
+            game.loadScene(menu.MainMenu())
+
+            game.curScene.removeGameObject(self)
+
     @property
     def gold(self):
         return self.__gold
@@ -206,28 +156,117 @@ class Player(Character):
     def gold(self, gold):
         self.__gold = gold
 
+    @property
+    def level(self):
+        return self.__level
 
+    @level.setter
+    def level(self, level):
+        self.__level = level
 
+    def move(self, x, y):
+        super().move(x, y)
+        scene = self.game.curScene
+
+        gameArea = scene.getGameArea()
+
+        x = clamp( self.x + x, gameArea.x, gameArea.width )
+        y = clamp( self.y + y, gameArea.y, gameArea.height )
+
+        gameObjects = scene.getGameObjectsAtPos(x, y)
+
+        canMove = True
+
+        for gO in gameObjects:
+            if(gO.collision):
+                canMove = False
+
+            if(isinstance(gO, blocks.Dirt)):
+                gO.setHealth( gO.getHealth() - 1 )
+            elif(isinstance(gO, blocks.Stone)):
+                pass
+            elif(isinstance(gO, blocks.Gold)):
+                gO.setHealth( gO.getHealth() - 1 )
+            elif(isinstance(gO, blocks.Wall)):
+                pass
+            elif(isinstance(gO, blocks.Door)):
+                if ( self.level == 5 ):
+                    self.win()
+                else:
+                    self.goToNextLevel()
+            elif(isinstance(gO, blocks.GoldPickup)):
+                scene.removeGameObject(gO)
+                self.gold +=1
+            elif(isinstance(gO, blocks.HealthPickup)):
+                scene.removeGameObject(gO)
+                self.health += 1
+            elif(isinstance(gO, Enemy)):
+                gO.health -= 1
+
+        if(canMove):
+            self.x = x
+            self.y = y
+
+    def goToNextLevel(self):
+        import pickle, shelve, menu
+        s = shelve.open(menu.Menu.LEVEL_FILE)
+
+        self.level += 1
+
+        try:
+            data = s["level_0" + str(self.__level)]
+            l = level.Level()
+            l.gameObjects = data
+        except:
+            l = level.Level()
+            l.generate()
+
+        l.player = self
+
+        s.close()
+
+        self.game.loadScene(l)
+
+    def win(self):
+        pass
 
 class Enemy(Character):
 
     fallSpeed = 1
     WALK_SPEED = 1
-    LEFT_IMAGE = Image([[Tile("<"), Tile("<"), Tile("E")]])
-    RIGHT_IMAGE = Image([[Tile("E"), Tile(">"), Tile(">")]])
 
     def __init__(self, x, y, maxHealth = 2):
-        super().__init__(x, y, self.RIGHT_IMAGE, maxHealth)
+        self.__leftImage = Image([[Tile("<"), Tile("<"), Tile("ö")]])
+        self.__rightImage = Image([[Tile("ö"), Tile(">"), Tile(">")]])
+        super().__init__(x, y, self.__rightImage, maxHealth)
         self.__walkTimer = 0
         self.__xVel = 3
+        self.__canDig = False
         self.canAttack = True
+
+    @property
+    def canDig(self):
+        return self.__canDig
+
+    @canDig.setter
+    def canDig(self, canDig):
+        if canDig:
+            self.__leftImage = Image([[Tile("«"), Tile("«"), Tile("Ö")]])
+            self.__rightImage = Image([[Tile("Ö"), Tile("»"), Tile("»")]])
+        else:
+            self.__leftImage = Image([[Tile("<"), Tile("<"), Tile("ö")]])
+            self.__rightImage = Image([[Tile("ö"), Tile(">"), Tile(">")]])
+        if(self.__xVel > 0):
+            self.image = self.__rightImage
+        elif(self.__xVel < 0):
+            self.image = self.__leftImage
+        self.__canDig = canDig
 
     def update(self, game):
         super().update(game)
         scene = game.curScene
 
         if ( isinstance(scene, level.Level) ):
-
             # Increment time until enemy will atempt to move again
             self.__walkTimer += game.deltaTime
 
@@ -241,24 +280,59 @@ class Enemy(Character):
                 self.fallTimer = 0
             elif(self.__walkTimer >= self.WALK_SPEED):
                 self.__walkTimer = 0
+                self.move(self.__xVel , 0)
 
-                # Movement AI
-                # Move until collision then switch directions
-                gameObjects = game.curScene.getGameObjectsAtPos(self.x + self.__xVel, self.y)
-                canMove = True
-                for gO in gameObjects:
-                    if(gO.collision and not isinstance(gO, Player)):
-                        # If we cannot move switch directions
-                        canMove = False
-                        self.__xVel *= -1
-                        # Update Image
-                        if(self.__xVel > 0):
-                            self.image = self.RIGHT_IMAGE
-                        elif(self.__xVel < 0):
-                            self.image = self.LEFT_IMAGE
-                if(canMove):
-                    self.move(self.__xVel , 0)
+        if self.health <= 0:
+            scene.removeGameObject(self)
 
+    def move(self, x, y):
+        super().move(x, y)
+        scene = self.game.curScene
+
+        gameArea = scene.getGameArea()
+
+        x = clamp( self.x + x, gameArea.x, gameArea.width )
+        y = clamp( self.y + y, gameArea.y, gameArea.height )
+
+        gameObjects = scene.getGameObjectsAtPos(x, y)
+
+        canMove = True
+
+        for gO in gameObjects:
+            if(gO.collision):
+                canMove = False
+
+            if(isinstance(gO, blocks.Dirt)):
+                if(self.canDig):
+                    gO.setHealth( gO.getHealth() - 1 )
+                self.reverseDir()
+            elif(isinstance(gO, blocks.Stone)):
+                self.reverseDir()
+            elif(isinstance(gO, blocks.Gold)):
+                self.reverseDir()
+            elif(isinstance(gO, blocks.Wall)):
+                self.reverseDir()
+            elif(isinstance(gO, blocks.Door)):
+                pass
+            elif(isinstance(gO, blocks.GoldPickup)):
+                pass
+            elif(isinstance(gO, blocks.HealthPickup)):
+                pass
+            elif(isinstance(gO, Enemy)):
+                self.reverseDir()
+            elif(isinstance(gO, Player)):
+                gO.health -= 1
+
+        if(canMove):
+            self.x = x
+            self.y = y
+
+    def reverseDir(self):
+        self.__xVel *= -1
+        if(self.__xVel > 0):
+            self.image = self.__rightImage
+        elif(self.__xVel < 0):
+            self.image = self.__leftImage
 
 
 class EditCursor(Character):
@@ -272,10 +346,8 @@ class EditCursor(Character):
 
     def update(self, game):
         super().update(game)
-        scene = game.curScene
 
         kb = game.keyboard
-        gO = ""
 
         if (kb.keyPressed(KeyCode.w)):
             self.move(0, -self.yVel, game)
@@ -286,7 +358,7 @@ class EditCursor(Character):
         elif (kb.keyPressed(KeyCode.d)):
             self.move(self.xVel, 0, game)
 
-        buttonPressed = True
+        placeBlock = True
 
         if (kb.keyPressed(KeyCode.SPACEBAR)):
             gO = blocks.EditMarker(self.x, self.y)
@@ -311,13 +383,26 @@ class EditCursor(Character):
         elif (kb.keyPressed(KeyCode.NINE)):
             gO = Enemy(self.x, self.y)
         else:
-            buttonPressed = False
+            placeBlock = False
 
-        if(buttonPressed):
+        if(placeBlock):
             self.placeBlock(gO)
 
+        gameObjects = game.curScene.getGameObjectsAtPos(self.x, self.y)
 
-
+        for gO in gameObjects:
+            if isinstance(gO, Enemy):
+                if (kb.keyPressed(KeyCode.PLUS)):
+                    gO.health += 1
+                elif (kb.keyPressed(KeyCode.MINUS)):
+                    gO.health = clamp(gO.health - 1, 1, 10)
+                elif (kb.keyPressed(KeyCode.TIMES)):
+                    if gO.canDig:
+                        gO.canDig = False
+                    else:
+                        gO.canDig = True
+                elif (kb.keyPressed(KeyCode.DIVIDE)):
+                    gO.reverseDir()
 
     def placeBlock(self, gO):
         scene = self.game.curScene

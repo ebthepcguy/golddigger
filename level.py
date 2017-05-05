@@ -17,6 +17,16 @@ class Level(Scene):
     def __init__(self):
         super().__init__()
         self.__popup = Popup("Save Game", "Load Game", "QUIT to Main Menu")
+        self.__player = None
+        self.__gameAria = None
+
+    @property
+    def player(self):
+        return self.__player
+
+    @player.setter
+    def player(self, player):
+        self.__player = player
 
     def update(self, game):
         kb = game.keyboard
@@ -43,14 +53,26 @@ class Level(Scene):
         super().load()
         self.__gameArea = Rect(self.game.width, self.game.height - 9, 0, 0)
 
+        # If there are playerSpawn blocks
         if ( self.hasAny(blocks.PlayerSpawn) ):
+            # Get the location of the block
             playerSpawn = self.getGameObjectsByType(blocks.PlayerSpawn)
-            self.__player = characters.Player(playerSpawn[0].x, playerSpawn[0].y)
+            # Create a player if there is not one already
+            if not ( self.__player ):
+                self.__player = characters.Player(0, 0)
+            # Spawn the player on the block
+            self.__player.x = playerSpawn[0].x
+            self.__player.y = playerSpawn[0].y
             self.removeGameObjectsByType(blocks.PlayerSpawn)
             self.addGameObject(self.__player)
+        # If there are not Player Objects create one
         elif ( not self.hasAny(characters.Player) ):
-            self.__player = characters.Player(3,1)
+            if not ( self.__player ):
+                self.__player = characters.Player(0,0)
+            self.__player.x = 3
+            self.__player.y = 1
             self.addGameObject(self.__player)
+        # If there are Player Objects
         elif ( self.hasAny(characters.Player) ):
             self.__player = self.getGameObjectsByType(characters.Player)[0]
 
@@ -60,23 +82,26 @@ class Level(Scene):
 
         self.originalGos = self.gameObjects
 
+    # to delete
     def getPlayer(self):
         return self.__player
 
     def getGameArea(self):
         return self.__gameArea
 
-    def generate(self, width, height):
+    def generate(self):
+        width = Game.Width
+        height = Game.Height - 9
 
         # Build base layer of air and stone
-        for row in range(0,height):
+        for row in range(0, height):
             for col in range(0, width * 3, 3):
                 if (row == 0):
                     block = blocks.Wall(col, row)
                 elif ( col == 0 or col == width - 3):
                     block = blocks.Wall(col, row)
                 elif (row in range(0, self.AIR_LEVEL)):
-                    block = blocks.Air(col, row)
+                    pass
                 elif (row == height - 1):
                     if(col == int(width / 3) -1):
                         block = blocks.Door(col, row)
@@ -88,15 +113,7 @@ class Level(Scene):
                 self.addGameObject(block)
 
         # Add player
-        self.addGameObject(self.__player)
-
-        # to test some thing out
-
-        block = blocks.Stone(3, 0)
-        self.addGameObject(block)
-
-        block = blocks.Stone(3, 3)
-        self.addGameObject(block)
+        #self.addGameObject(self.__player)
 
     def saveGameMenu(self, game):
 

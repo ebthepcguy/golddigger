@@ -2,13 +2,19 @@ import engine.gameObject, engine.screenBuffer, engine.scene, engine.keyboard
 import os, time
 
 class Game(object):
-    
+
     MIN_DELTA_TIME = 0.15
+    Width = 0
+    Height = 0
 
     def __init__(self, title, width, height):
         self.__title = title
+        # To delete
         self.__width = width
         self.__height = height
+        
+        Game.Width = width
+        Game.Height = height
         self.__screenBuffer = engine.screenBuffer.ScreenBuffer(width, height)
         self.__keyboard = engine.keyboard.Keyboard()
         self.__curScene = None

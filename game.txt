@@ -1,10 +1,10 @@
 TODO
-  Move between levels
-  Quit to menu
-  End screen/winning
+  x Move between levels
+  x Quit to menu
+  End screen/winning ( win() function in Player class )
     - When last level finishes
 
-  Load level screen
+  x Load level screen
   Hit animation/sound
     - hit sound
     - hurt sound
@@ -20,8 +20,8 @@ TODO
   Pseudo code (Shhhhh!!)
 
 Features to add
-  More Enemies
-    Enemies that break block
+x  More Enemies
+x    Enemies that break block
   Fog of war
   Ladder/double jump
   Jump and hit block overhead

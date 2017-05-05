@@ -1,4 +1,4 @@
-import msvcrt
+import msvcrt, os, time
 from enum import Enum
 
 class Keyboard(object):
@@ -9,7 +9,7 @@ class Keyboard(object):
     def update(self):
         self.__pressedKeys = []
         # Add keys to the list while there are keys in the buffer
-        if(msvcrt.kbhit()):
+        while(msvcrt.kbhit()):
             self.__pressedKeys.append(ord(msvcrt.getch()))
 
     def keyPressed(self, key):
@@ -34,3 +34,14 @@ class KeyCode(Enum):
     ENTER = 13
     ESC = 27
     SPACEBAR = 32
+    TIMES, PLUS, COMMA, MINUS, PERIOD, DIVIDE = range(42, 48)
+
+"""
+kB = Keyboard()
+
+while True:
+    os.system("CLS")
+    kB.update()
+    print(kB.getPressedKeys())
+    time.sleep(.5)
+"""

@@ -65,8 +65,6 @@ class LevelEditor(Scene):
                     block = blocks.Wall(col, row)
                 elif ( col == 0 or col == width - 3):
                     block = blocks.Wall(col, row)
-                elif (row in range(0, self.AIR_LEVEL)):
-                    pass
                 elif (row == height - 1):
                     if(col == int(width / 3) -1):
                         block = blocks.Door(col, row)

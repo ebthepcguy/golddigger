@@ -53,7 +53,7 @@ class Menu(Scene):
     def load(self):
         super().load()
 
-        self.drawBoarder(self.game)
+        self.drawBoarder()
 
         self.addGameObject( GameObject(self.__titleX, self.__titleY, Image.stringToImage(self.title) ) )
 
@@ -74,11 +74,11 @@ class Menu(Scene):
     def goBack(self):
         self.game.loadScene(self.lastScene)
 
-    def drawBoarder(self, game, offset = 1):
-        maxX = game.width - 1
-        maxY = game.height - 2
-        for y in range(0, game.height):
-            for x in range(0, game.width):
+    def drawBoarder(self, offset = 1):
+        maxX = Game.Width - 1
+        maxY = Game.Height - 2
+        for y in range(0, Game.Height):
+            for x in range(0, Game.Width):
 
                 if x == 0 + offset and y == 0 + offset:
                     self.addShape(x, y, "╔")
@@ -249,9 +249,13 @@ class MainMenu(SelectionMenu):
     def startGame(self, game):
         s = shelve.open(Menu.LEVEL_FILE)
 
-        data = s["level_01"]
-        l = level.Level()
-        l.gameObjects = data
+        try:
+            data = s["level_01"]
+            l = level.Level()
+            l.gameObjects = data
+        except:
+            l = level.Level()
+            l.generate()
 
         s.close()
 
