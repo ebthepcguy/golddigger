@@ -3,12 +3,13 @@ import engine.image, engine.util, engine.tile, engine.util
 
 class GameObject(object):
 
-    def __init__(self, x, y, image = None, collision = True):
+    def __init__(self, x, y, image = None, collision = True, destructable = False):
         self.__x = x
         self.__y = y
         self.__image = None
         self.image = image
         self.__collision = collision # If the object has collision
+        self.__destructable = destructable
 
     @property
     def x(self):
@@ -51,6 +52,14 @@ class GameObject(object):
     @collision.setter
     def collision(self, collision):
         self.__collision = collision
+
+    @property
+    def destructable(self):
+        return self.__destructable
+
+    @destructable.setter
+    def destructable(self, destructable):
+        self.__destructable = destructable
 
     def generateRect(self):
 

@@ -98,6 +98,7 @@ class Player(Character):
         self.__gold = 0
         self.__level = 1
         self.canAttack = True
+        self.destructable = True
 
     def update(self, game):
         super().update(game)
@@ -123,6 +124,8 @@ class Player(Character):
             self.move(-self.xVel,0)
         elif(kb.keyPressed( KeyCode.d )):
             self.move(self.xVel,0)
+        elif(kb.keyPressed( KeyCode.h )):
+            self.health += 1
 
         # TODO: CHANGE
         if(self.health <= 0):
@@ -181,12 +184,15 @@ class Player(Character):
             if(gO.collision):
                 canMove = False
 
+            if gO.destructable:
+                gO.health -= 1
+
             if(isinstance(gO, blocks.Dirt)):
-                gO.setHealth( gO.getHealth() - 1 )
+                pass
             elif(isinstance(gO, blocks.Stone)):
                 pass
             elif(isinstance(gO, blocks.Gold)):
-                gO.setHealth( gO.getHealth() - 1 )
+                pass
             elif(isinstance(gO, blocks.Wall)):
                 pass
             elif(isinstance(gO, blocks.Door)):
@@ -201,7 +207,9 @@ class Player(Character):
                 scene.removeGameObject(gO)
                 self.health += 1
             elif(isinstance(gO, Enemy)):
-                gO.health -= 1
+                pass
+            elif(isinstance(gO, blocks.Bomb)):
+                pass
 
         if(canMove):
             self.x = x
@@ -243,6 +251,7 @@ class Enemy(Character):
         self.__xVel = 3
         self.__canDig = False
         self.canAttack = True
+        self.destructable = True
 
     @property
     def canDig(self):
@@ -302,9 +311,11 @@ class Enemy(Character):
             if(gO.collision):
                 canMove = False
 
+            if gO.destructable and self.canDig and not isinstance(gO, Enemy):
+                gO.health -= 1
+                self.reverseDir()
+
             if(isinstance(gO, blocks.Dirt)):
-                if(self.canDig):
-                    gO.setHealth( gO.getHealth() - 1 )
                 self.reverseDir()
             elif(isinstance(gO, blocks.Stone)):
                 self.reverseDir()
@@ -322,6 +333,8 @@ class Enemy(Character):
                 self.reverseDir()
             elif(isinstance(gO, Player)):
                 gO.health -= 1
+            elif(isinstance(gO, blocks.Bomb)):
+                pass
 
         if(canMove):
             self.x = x
@@ -382,6 +395,8 @@ class EditCursor(Character):
             gO = blocks.Door(self.x, self.y)
         elif (kb.keyPressed(KeyCode.NINE)):
             gO = Enemy(self.x, self.y)
+        elif (kb.keyPressed(KeyCode.PERIOD)):
+            gO = blocks.Bomb(self.x, self.y)
         else:
             placeBlock = False
 
@@ -391,12 +406,16 @@ class EditCursor(Character):
         gameObjects = game.curScene.getGameObjectsAtPos(self.x, self.y)
 
         for gO in gameObjects:
-            if isinstance(gO, Enemy):
+            if gO.destructable:
                 if (kb.keyPressed(KeyCode.PLUS)):
                     gO.health += 1
                 elif (kb.keyPressed(KeyCode.MINUS)):
-                    gO.health = clamp(gO.health - 1, 1, 10)
-                elif (kb.keyPressed(KeyCode.TIMES)):
+                    # 3 should be changed to max health
+                    gO.health = clamp(gO.health - 1, 1, 3)
+                elif (kb.keyPressed(KeyCode.TIMES) and isinstance(gO, blocks.Bomb)):
+                    gO.health = 0
+            if isinstance(gO, Enemy):
+                if (kb.keyPressed(KeyCode.TIMES)):
                     if gO.canDig:
                         gO.canDig = False
                     else:

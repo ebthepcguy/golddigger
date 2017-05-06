@@ -224,14 +224,15 @@ class MainMenu(SelectionMenu):
 
     def update(self, game):
         super().update(game)
+        import winsound
 
         kb = game.keyboard
 
         if (kb.keyPressed(KeyCode.ENTER)):
+            winsound.PlaySound('sounds/select.wav', winsound.SND_FILENAME)
             selectedOption = self.getSelectedOption()
 
             if ( selectedOption == self.options[0].text ):
-
                 self.startGame(game)
             elif ( selectedOption == self.options[1].text ):
                 l = LoadMenu("Load Saved Game:", self)

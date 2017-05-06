@@ -9,10 +9,11 @@ TODO
     - hit sound
     - hurt sound
     - jump
-    - pick up sound
+    x pick up gold sound
     x damage block sound
-    - break block sound
+    x break block sound
     - move through menu
+    x select menu option
 
 
 
