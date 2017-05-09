@@ -17,10 +17,11 @@ class Hud(GameObject):
 
         player = scene.player
 
-        image = ""
-        image += "Health " + str(player.health) + "/" + str(player.maxHealth)
-        image += " Gold " + str(player.gold)
-        image += "\n\n"
+        if(player):
+            image = ""
+            image += "Health " + str(player.health) + "/" + str(player.maxHealth)
+            image += " Gold " + str(player.gold)
+            image += "\n\n"
 
         image += "Controls: W(Up/Jump), A(Left), S(Down), D(Right)" + "\n"
         image += "Enemies: Basic <<Ö : Pusher ╠═Ö : Digger ««ö" + "\n"

@@ -4,7 +4,7 @@ from engine.gameObject import GameObject
 from engine.game import Game
 from engine.keyboard import Keyboard, KeyCode
 from engine.util import clamp
-import pickle, shelve, level, levelEditor
+import pickle, shelve, level, levelEditor, copy
 
 class Menu(Scene):
 
