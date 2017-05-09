@@ -25,5 +25,10 @@ class Hud(GameObject):
         image += "Controls: W(Up/Jump), A(Left), S(Down), D(Right)" + "\n"
         image += "Enemies: Basic <<Ö : Pusher ╠═Ö : Digger ««ö" + "\n"
         image += "Blocks: Dirt ▒▒▒ : Gold [$] : Stone [#]" + "\n"
+        image += "Pick ups: Gold $ : Health +" + "\n"
+        image += "Instructions: Find your way to the exit while collecting gold" + "\n"
+        image += "              Moving onto blocks and enemies deals damage" + "\n"
+
+
 
         self.image = Image.stringToImage(image)

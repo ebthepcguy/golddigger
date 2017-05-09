@@ -13,7 +13,7 @@ from hud import Hud
 
 class Level(Scene):
 
-    MAX_LEVEL = 5
+    MAX_LEVEL = 3
 
 
     def __init__(self):

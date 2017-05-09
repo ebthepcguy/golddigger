@@ -287,7 +287,26 @@ class Player(Character):
         Game.curGame.loadScene(l)
 
     def win(self):
-        pass
+        import os
+        os.system('cls')
+        print("""
+
+        __   __           __        ___
+        \ \ / /__  _   _  \ \      / (_)_ __
+         \ V / _ \| | | |  \ \ /\ / /| | '_ \\
+          | | (_) | |_| |   \ V  V / | | | | |
+          |_|\___/ \__,_|    \_/\_/  |_|_| |_|
+
+        """)
+
+        print("         ------------------------------------------------------")
+        print(" Final Gold: " + str(self.gold))
+        input(" Press enter to quit to main menu")
+
+        Game.curGame.curScene.removeGameObjectsByType(DebugDisplay)
+        Game.curGame.loadScene(menu.MainMenu())
+
+        Game.curGame.curScene.removeGameObject(self)
 
     def lose(self):
         import os

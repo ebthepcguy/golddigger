@@ -8,6 +8,7 @@ class Scene(object):
         self.__originalGameObjects = None
         self.__player = None
         self.__gameArea = None
+        self.__quitting = False
 
     @property
     def gameObjects(self):
@@ -58,8 +59,9 @@ class Scene(object):
     def updateGameObjects(self):
         for layer in self.__gameObjects:
             for gO in layer:
-                if not self.__paused or not gO.canPause:
-                    gO.update()
+                if(not self.__quitting):
+                    if not self.__paused or not gO.canPause:
+                        gO.update()
 
     def draw(self, game):
 
@@ -137,6 +139,10 @@ class Scene(object):
                 if(isinstance(gO, type)):
                     out = True
         return out
+
+    def quit(self):
+        self.__quitting = True
+
 
     def len(self):
         num = 0

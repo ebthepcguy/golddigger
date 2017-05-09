@@ -3,7 +3,7 @@ import os, time
 
 class Game(object):
 
-    MIN_DELTA_TIME = 0.05 # Minimum time between frames
+    MIN_DELTA_TIME = 0.15 # Minimum time between frames
     curGame = None
     width = 0
     height = 0
@@ -49,6 +49,9 @@ class Game(object):
         self.__running = False
 
     def loadScene(self, scene):
+
+        if(self.__curScene):
+            self.__curScene.quit()
         # Update keyboard to clear out any keys pressed from last scene
         self.__keyboard.update()
         self.__curScene = scene
