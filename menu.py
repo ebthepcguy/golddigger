@@ -245,6 +245,8 @@ class MainMenu(SelectionMenu):
             elif ( selectedOption == self.options[3].text ):
                 self.startEditor()
             elif ( selectedOption == self.options[4].text ):
+                subprocess.call(['C:\\Windows\\System32\\Notepad.exe', 'readme.txt'])
+            elif ( selectedOption == self.options[5].text ):
                 Game.curGame.quit()
 
     def startGame(self):
