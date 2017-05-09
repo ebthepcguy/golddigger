@@ -3,10 +3,11 @@ from engine.gameObject import GameObject
 from engine.game import Game
 from engine.util import Rect
 from engine.keyboard import Keyboard, KeyCode
-from engine.popup import Popup
 
 import characters, blocks, menu
+from popup import Popup
 from debugDisplay import DebugDisplay
+from hud import Hud
 
 class LevelEditor(Scene):
 
@@ -16,8 +17,25 @@ class LevelEditor(Scene):
         super().__init__()
         self.__popup = Popup("Save Level", "Load Level", "QUIT to Main Menu")
 
-    def update(self, game):
-        kb = game.keyboard
+    def load(self):
+        super().load()
+
+        blockWidth = blocks.Block.width
+        blockHeight = blocks.Block.height
+        self.gameArea = Rect(Game.curGame.width - blockWidth, Game.curGame.height - Hud.height, 0, 0)
+
+        if ( self.len() == 0 ):
+            self.generateMap()
+
+        playerStartX = blockWidth
+        playerStartY = blockHeight
+
+        self.player = characters.EditCursor(playerStartX, playerStartY)
+        # Add player
+        self.addGameObject(self.player, 1)
+
+    def update(self):
+        kb = Game.curGame.keyboard
 
         if (kb.keyPressed(KeyCode.ESC)):
             if self.paused:
@@ -32,32 +50,13 @@ class LevelEditor(Scene):
                 activeOption = self.__popup.activeOption
 
                 if activeOption == 0:
-                    self.startSaveLevelMenu(game)
+                    self.startSaveLevelMenu()
                 elif activeOption == 1:
-                    self.startLoadLevelMenu(game)
+                    self.startLoadLevelMenu()
                 elif activeOption == 2:
-                    game.loadScene(menu.MainMenu())
+                    Game.curGame.loadScene(menu.MainMenu())
 
-    def load(self):
-        super().load()
-
-        self.__gameArea = Rect(self.game.width, self.game.height - 9, 0, 0)
-        self.__player = characters.EditCursor(3, 0)
-        if ( self.len() == 0 ):
-            self.generate(self.__gameArea.width, self.__gameArea.height)
-        self.addGameObject(DebugDisplay(0, self.game.height - 6))
-        # Add player
-        self.addGameObject(self.__player, 1)
-
-        self.originalGos = self.gameObjects
-
-    def getPlayer(self):
-        return self.__player
-
-    def getGameArea(self):
-        return self.__gameArea
-
-    def generate(self, width, height):
+    def generateOld(self, width, height):
 
         for row in range(0,height):
             for col in range(0, width * 3, 3):
@@ -75,7 +74,29 @@ class LevelEditor(Scene):
 
                 self.addGameObject(block)
 
-    def startSaveLevelMenu(self, game):
+    def generateMap(self):
+        blockWidth = 3
+        blockHeight = 1
+        levelWidth = self.gameArea.width
+        levelHeight = self.gameArea.height
+        startX = self.gameArea.x
+        startY = self.gameArea.y
+
+        doorYPos = 7
+
+        for y in range(startY, levelHeight + blockHeight, blockHeight):
+            for x in range(startX, levelWidth + blockWidth, blockWidth):
+                if ( y == startY or x == startX or x == levelWidth or y == levelHeight ):
+                    if( x == blockWidth * doorYPos and y == levelHeight ):
+                        block = blocks.Door(x, y)
+                    else:
+                        block = blocks.Wall(x, y)
+                else:
+                    block = blocks.Dirt(x, y)
+
+                self.addGameObject(block)
+
+    def startSaveLevelMenu(self):
 
         self.paused = False
         self.removeGameObjectsByType(characters.EditCursor)
@@ -83,9 +104,9 @@ class LevelEditor(Scene):
 
         saveMenu = menu.SaveMenu("Save Your Custom Level: Enter a name.", self)
         saveMenu.fileName = menu.Menu.LEVEL_FILE
-        game.loadScene(saveMenu)
+        Game.curGame.loadScene(saveMenu)
 
-    def startLoadLevelMenu(self, game):
+    def startLoadLevelMenu(self):
 
         self.paused = False
         self.removeGameObjectsByType(characters.EditCursor)
@@ -93,4 +114,4 @@ class LevelEditor(Scene):
 
         loadMenu = menu.LoadMenu("Load Custom Level:", self)
         loadMenu.fileName = menu.Menu.LEVEL_FILE
-        game.loadScene(loadMenu)
+        Game.curGame.loadScene(loadMenu)

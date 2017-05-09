@@ -1,3 +1,4 @@
+from engine.game import Game
 from engine.gameObject import GameObject
 from engine.keyboard import Keyboard, KeyCode
 from engine.image import Image
@@ -16,6 +17,8 @@ class Popup(GameObject):
 
         super().__init__(18, 15, image)
 
+        self.canPause = False
+
     @property
     def activeOption(self):
         return self.__activeOption
@@ -32,15 +35,15 @@ class Popup(GameObject):
     def focusedOn(self, focusedOn):
         self.__focusedOn = focusedOn
 
-    def update(self, game):
-        kb = game.keyboard
+    def update(self):
+        kb = Game.curGame.keyboard
 
         if (kb.keyPressed(KeyCode.w)):
             self.__activeOption -= 1
         elif (kb.keyPressed(KeyCode.s)):
             self.__activeOption += 1
 
-        self.__activeOption = clamp( self.__activeOption, 0, len(self.__options) )
+        self.__activeOption = clamp( self.__activeOption, 0, len(self.__options) -1 )
 
         image = self.generateCurrentImage()
         self.image = Image.stringToImage(image)

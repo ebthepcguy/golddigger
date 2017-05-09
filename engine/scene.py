@@ -1,5 +1,4 @@
 import engine.gameObject, engine.screenBuffer, engine.game
-from engine.popup import Popup
 
 class Scene(object):
 
@@ -7,6 +6,8 @@ class Scene(object):
         self.__gameObjects = [[] for _ in range(10)]
         self.__paused = False
         self.__originalGameObjects = None
+        self.__player = None
+        self.__gameArea = None
 
     @property
     def gameObjects(self):
@@ -32,24 +33,37 @@ class Scene(object):
     def originalGos(self, originalGos):
         self.__originalGos = originalGos
 
+    @property
+    def player(self):
+        return self.__player
+
+    @player.setter
+    def player(self, player):
+        self.__player = player
+
+    @property
+    def gameArea(self):
+        return self.__gameArea
+
+    @gameArea.setter
+    def gameArea(self, gameArea):
+        self.__gameArea = gameArea
+
     def load(self):
         pass
 
-    def update(self, game):
+    def update(self):
         pass
 
     def updateGameObjects(self):
         for layer in self.__gameObjects:
             for gO in layer:
-                if not self.__paused:
-                    gO.update(self.__game)
-                elif isinstance(gO, Popup):
-                    if gO.focusedOn == True:
-                        gO.update(self.__game)
+                if not self.__paused or not gO.canPause:
+                    gO.update()
 
-    def draw(self):
+    def draw(self, game):
 
-        screenBuffer = self.__game.screenBuffer
+        screenBuffer = engine.game.Game.curGame.screenBuffer
 
         for layer in self.__gameObjects:
             for gO in layer:
@@ -123,14 +137,6 @@ class Scene(object):
                 if(isinstance(gO, type)):
                     out = True
         return out
-
-    @property
-    def game(self):
-        return self.__game
-
-    @game.setter
-    def game(self, game):
-        self.__game = game
 
     def len(self):
         num = 0

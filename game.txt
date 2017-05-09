@@ -6,24 +6,15 @@ TODO
 
   x Load level screen
   Hit animation/sound
-    - hit sound
-    - hurt sound
-    - jump
-    x pick up gold sound
-    x damage block sound
-    x break block sound
-    - move through menu
-    x select menu option
-
-
+    x Sounds slow down the game / only good for menus
 
   Clean up code
   Pseudo code (Shhhhh!!)
 
-Features to add
-x  More Enemies
-x    Enemies that break block
-  Fog of war
-  Ladder/double jump
-  Jump and hit block overhead
-  Sound
+  Features to add
+    x More Enemies
+    x Enemies that break block
+      Fog of war
+      Ladder/double jump
+    x Jump and hit block overhead
+      Sound

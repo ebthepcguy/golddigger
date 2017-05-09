@@ -6,23 +6,28 @@ from engine.util import clamp
 import level, levelEditor, characters
 
 class Block(GameObject):
+
+    width = 3
+    height = 1
+
     def __init__(self, x, y, image, collision = True):
         super().__init__(x, y, image, collision)
-        self.__game = None
-        self.__health = 1
+        self.__maxHealth = 1
+        self.__health = self.__maxHealth
         self.__canFall = False
         self.__canHurt = False
         self.__fallTimer = 0
         self.__fallDelay = 0.3
         self.__falling = False
+        self.__pushable = False
 
     @property
-    def game(self):
-        return self.__game
+    def maxHealth(self):
+        return self.__maxHealth
 
-    @game.setter
-    def game(self, game):
-        self.__game = game
+    @maxHealth.setter
+    def maxHealth(self, maxHealth):
+        self.__maxHealth = maxHealth
 
     @property
     def health(self):
@@ -33,7 +38,7 @@ class Block(GameObject):
         self.__health = health
 
         if self.__health <= 0:
-            self.__game.curScene.removeGameObject(self)
+            Game.curGame.curScene.removeGameObject(self)
 
     @property
     def canFall(self):
@@ -59,13 +64,19 @@ class Block(GameObject):
     def falling(self, falling):
         self.__falling = falling
 
-    def update(self, game):
-        self.__game = game
+    @property
+    def pushable(self):
+        return self.__pushable
 
-        scene = game.curScene
+    @pushable.setter
+    def pushable(self, pushable):
+        self.__pushable = pushable
+
+    def update(self):
+        scene = Game.curGame.curScene
 
         if( isinstance(scene, level.Level) and self.__canFall ):
-            gameArea = scene.getGameArea()
+            gameArea = scene.gameArea
 
             x = clamp( self.x, gameArea.x, gameArea.width )
             y = clamp( self.y + 1, gameArea.y, gameArea.height )
@@ -83,7 +94,7 @@ class Block(GameObject):
                     self.__falling = False
 
             if ( self.__falling ):
-                self.__fallTimer += game.deltaTime
+                self.__fallTimer += Game.curGame.deltaTime
             else:
                 self.__fallTimer = 0
 
@@ -96,10 +107,11 @@ class Dirt(Block):
     FULL = Image([[Tile("▒"), Tile("▒"), Tile("▒")]])
     HALF = Image([[Tile("░"), Tile("░"), Tile("░")]])
 
-    def __init__(self, x, y, health = 2):
+    def __init__(self, x, y, maxHealth = 2):
         image = self.FULL
         super().__init__(x, y, image)
-        self.health = health
+        self.maxHealth = maxHealth
+        self.health = maxHealth
         self.destructable = True
 
     @property
@@ -115,10 +127,10 @@ class Dirt(Block):
         if(self.__health == 1):
             self.image = self.HALF
         if(self.__health <= 0):
-            self.game.curScene.removeGameObject(self)
+            Game.curGame.curScene.removeGameObject(self)
 
-    def update(self, game):
-        super().update(game)
+    def update(self):
+        super().update()
 
 class Gold(Block):
 
@@ -126,10 +138,11 @@ class Gold(Block):
     HALF = Image([[Tile("("), Tile("$"), Tile(")")]])
     LITTLE = Image([[Tile("{"), Tile("$"), Tile("}")]])
 
-    def __init__(self, x, y, health = 3):
+    def __init__(self, x, y, maxHealth = 3):
         image = self.FULL
         super().__init__(x, y, image)
-        self.health = health
+        self.maxHealth = maxHealth
+        self.health = maxHealth
         self.destructable = True
 
     @property
@@ -147,19 +160,21 @@ class Gold(Block):
         elif(self.__health == 1):
             self.image = self.LITTLE
         elif(self.__health <= 0):
-            self.game.curScene.addGameObject(GoldPickup(self.x, self.y))
-            self.game.curScene.removeGameObject(self)
+            Game.curGame.curScene.addGameObject(GoldPickup(self.x, self.y))
+            Game.curGame.curScene.removeGameObject(self)
 
-    def update(self, game):
-        super().update(game)
+    def update(self):
+        super().update()
 
 class Stone(Block):
-    def __init__(self, x, y, health = 2):
+    def __init__(self, x, y, maxHealth = 1):
         image = Image([[Tile("["), Tile("#"), Tile("]")]])
         super().__init__(x, y, image)
         self.canFall = True
         self.canHurt = True
-        self.health = 1
+        self.maxHealth = maxHealth
+        self.health = maxHealth
+        self.pushable = True
 
     @property
     def health(self):
@@ -170,11 +185,11 @@ class Stone(Block):
         self.__health = health
 
         if self.__health <= 0:
-            self.game.curScene.addGameObject(Smoke(self.x, self.y), 2)
-            self.game.curScene.removeGameObject(self)
+            Game.curGame.curScene.addGameObject(Smoke(self.x, self.y), 2)
+            Game.curGame.curScene.removeGameObject(self)
 
-    def update(self, game):
-        super().update(game)
+    def update(self):
+        super().update()
 
 class Wall(Block):
     def __init__(self, x, y):
@@ -186,9 +201,9 @@ class Door(Block):
         image = Image([[Tile(" "),Tile(" "),Tile(" ")]])
         super().__init__(x, y, image)
 
-    def update(self, game):
-        super().update(game)
-        scene = game.curScene
+    def update(self):
+        super().update()
+        scene = Game.curGame.curScene
 
         if (isinstance(scene, levelEditor.LevelEditor)):
             self.image = Image([[Tile("|"), Tile("D"), Tile("|")]])
@@ -200,9 +215,9 @@ class PlayerSpawn(Block):
         image = Image([[Tile(" "), Tile(" "), Tile(" ")]])
         super().__init__(x, y, image)
 
-    def update(self, game):
-        super().update(game)
-        scene = game.curScene
+    def update(self):
+        super().update()
+        scene = Game.curGame.curScene
 
         if (isinstance(scene, levelEditor.LevelEditor)):
             self.image = Image([[Tile("|"), Tile("P"), Tile("|")]])
@@ -216,8 +231,8 @@ class GoldPickup(Block):
         self.collision = False
         self.canFall = True
 
-    def update(self, game):
-        super().update(game)
+    def update(self):
+        super().update()
 
 class HealthPickup(Block):
     def __init__(self, x, y):
@@ -226,34 +241,35 @@ class HealthPickup(Block):
         self.collision = False
         self.canFall = True
 
-    def update(self, game):
-        super().update(game)
+    def update(self):
+        super().update()
 
 class EditMarker(Block):
     def __init__(self, x, y):
         image = Image.stringToImage(" *")
         super().__init__(x, y, image)
 
-    def update(self, game):
-        super().update(game)
+    def update(self):
+        super().update()
 
 class Bomb(Block):
 
-    FULL = Image([[Tile("["), Tile("?"), Tile("]")]])
-    HALF = Image([[Tile("{"), Tile("!"), Tile("}")]])
-    THREE = Image([[Tile("{"), Tile("3"), Tile("}")]])
-    TWO = Image([[Tile("{"), Tile("2"), Tile("}")]])
-    ONE = Image([[Tile("{"), Tile("1"), Tile("}")]])
+    full = Image([[Tile("["), Tile("3"), Tile("]")]])
+    HALF = Image([[Tile("["), Tile("!"), Tile("]")]])
+    THREE = Image([[Tile("["), Tile("3"), Tile("]")]])
+    TWO = Image([[Tile("["), Tile("2"), Tile("]")]])
+    ONE = Image([[Tile("["), Tile("1"), Tile("]")]])
 
-    def __init__(self, x, y, health = 2):
-        image = self.FULL
+    def __init__(self, x, y, maxHealth = 2):
+        self.__fullFuseTime = 3
+        self.__curFuseTime = self.__fullFuseTime
+        self.__fuseLit = False
+        image = self.full
         super().__init__(x, y, image)
-        self.health = health
+        self.maxHealth = maxHealth
+        self.health = maxHealth
         self.destructable = True
         self.canHurt = True
-        self.__fullFuseTime = 3
-        self.__fuseTime = self.__fullFuseTime
-        self.__fuseLit = False
 
     @property
     def health(self):
@@ -264,33 +280,45 @@ class Bomb(Block):
         self.__health = health
 
         if(self.__health >= 2):
-            self.image = self.FULL
+            self.image = self.full
         elif(self.__health == 1):
             self.image = self.HALF
             self.canFall = True
         elif(self.__health <= 0):
             self.__fuseLit = True
+            self.pushable = True
 
-    def update(self, game):
-        super().update(game)
+    @property
+    def fullFuseTime(self):
+        return self.__fullFuseTime
+
+    @fullFuseTime.setter
+    def fullFuseTime(self, fullFuseTime):
+        self.__fullFuseTime = fullFuseTime
+        self.__curFuseTime = self.__fullFuseTime
+        self.full = Image([[Tile("["), Tile(str(fullFuseTime)), Tile("]")]])
+        self.image = self.full
+
+    def update(self):
+        super().update()
 
         if self.__fuseLit:
-            self.__fuseTime -= game.deltaTime
+            self.__curFuseTime -= Game.curGame.deltaTime
 
-            if self.__fuseTime >= self.__fullFuseTime * 0.66:
+            if self.__curFuseTime >= self.__fullFuseTime * 0.66:
                 self.image = self.THREE
-            elif self.__fuseTime >= self.__fullFuseTime * 0.33:
+            elif self.__curFuseTime >= self.__fullFuseTime * 0.33:
                 self.image = self.TWO
-            elif self.__fuseTime >= 0:
+            elif self.__curFuseTime >= 0:
                 self.image = self.ONE
             else:
                 self.blowUp()
 
     def blowUp(self):
-        scene = self.game.curScene
+        scene = Game.curGame.curScene
+        """
         blockWidth = 3
         blockHeight = 1
-        """
         for x in range(self.x - (blockWidth*2), self.x + (blockWidth*3), blockWidth):
             for y in range(self.y - (blockHeight*2), self.y + (blockHeight*3), blockHeight):
                 if not ( x == self.x and y == self.y ):
@@ -319,73 +347,101 @@ class Bomb(Block):
         scene.removeGameObject(self)
 
     def blastAdjacentX(self, signX):
-        scene = self.game.curScene
+        scene = Game.curGame.curScene
         x = self.x
         y = self.y
         blockWidth = 3
         blockHeight = 1
 
-        gameObjects = scene.getGameObjectsAtPos(x + (blockWidth * signX), y)
         wall = False
+        gameObjects = scene.getGameObjectsAtPos(x + (blockWidth * signX), y)
         for gO in gameObjects:
             self.doDamage(gO)
             if isinstance(gO, Wall):
                 wall = True
-        self.addSmoke(x + (blockWidth * signX), y)
+
         if not wall:
+            self.addSmoke(x + (blockWidth * signX), y)
+
+            wall = False
             gameObjects = scene.getGameObjectsAtPos(x + (blockWidth * 2 * signX), y)
             for gO in gameObjects:
                 self.doDamage(gO)
-            self.addSmoke(x + (blockWidth * 2 * signX), y)
+                if isinstance(gO, Wall):
+                    wall = True
+            if not wall:
+                self.addSmoke(x + (blockWidth * 2 * signX), y)
 
     def blastAdjacentY(self, signY):
-        scene = self.game.curScene
+        scene = Game.curGame.curScene
         x = self.x
         y = self.y
         blockWidth = 3
         blockHeight = 1
 
-        gameObjects = scene.getGameObjectsAtPos(x, y + (blockHeight * signY))
         wall = False
+        gameObjects = scene.getGameObjectsAtPos(x, y + (blockHeight * signY))
         for gO in gameObjects:
             self.doDamage(gO)
             if isinstance(gO, Wall):
                 wall = True
-        self.addSmoke(x, y + (blockHeight * signY))
+
         if not wall:
+            self.addSmoke(x, y + (blockHeight * signY))
+
+            wall = False
             gameObjects = scene.getGameObjectsAtPos(x, y + (blockHeight * 2 * signY))
             for gO in gameObjects:
                 self.doDamage(gO)
-            self.addSmoke(x, y + (blockHeight * 2 * signY))
+                if isinstance(gO, Wall):
+                    wall = True
+            if not wall:
+                self.addSmoke(x, y + (blockHeight * 2 * signY))
 
 
     def blastDiagonal(self, signX, signY):
-        scene = self.game.curScene
+        scene = Game.curGame.curScene
         x = self.x
         y = self.y
         blockWidth = 3
         blockHeight = 1
 
-        gameObjects = scene.getGameObjectsAtPos(x + (blockWidth * signX), y + (blockHeight * signY))
         wall = False
+        gameObjects = scene.getGameObjectsAtPos(x + (blockWidth * signX), y + (blockHeight * signY))
         for gO in gameObjects:
             self.doDamage(gO)
             if isinstance(gO, Wall):
                 wall = True
-        self.addSmoke(x + (blockWidth * signX), y + (blockHeight * signY))
+
         if not wall:
+            self.addSmoke(x + (blockWidth * signX), y + (blockHeight * signY))
+
+            wall = False
             gameObjects = scene.getGameObjectsAtPos(x + (blockWidth * 2 * signX), y + (blockHeight * signY))
             for gO in gameObjects:
                 self.doDamage(gO)
-            self.addSmoke(x + (blockWidth * 2 * signX), y + (blockHeight * signY))
+                if isinstance(gO, Wall):
+                    wall = True
+            if not wall:
+                self.addSmoke(x + (blockWidth * 2 * signX), y + (blockHeight * signY))
+
+            wall = False
             gameObjects = scene.getGameObjectsAtPos(x + (blockWidth * 2 * signX), y + (blockHeight * 2 * signY))
             for gO in gameObjects:
                 self.doDamage(gO)
-            self.addSmoke(x + (blockWidth * 2 * signX), y + (blockHeight * 2 * signY))
+                if isinstance(gO, Wall):
+                    wall = True
+            if not wall:
+                self.addSmoke(x + (blockWidth * 2 * signX), y + (blockHeight * 2 * signY))
+
+            wall = False
             gameObjects = scene.getGameObjectsAtPos(x + (blockWidth * signX), y + (blockHeight * 2 * signY))
             for gO in gameObjects:
                 self.doDamage(gO)
-            self.addSmoke(x + (blockWidth * signX), y + (blockHeight * 2 * signY))
+                if isinstance(gO, Wall):
+                    wall = True
+            if not wall:
+                self.addSmoke(x + (blockWidth * signX), y + (blockHeight * 2 * signY))
 
     def doDamage(self, gO):
         blockWidth = 3
@@ -397,7 +453,7 @@ class Bomb(Block):
                 gO.health -= 1
 
     def addSmoke(self, x, y):
-        scene = self.game.curScene
+        scene = Game.curGame.curScene
         smoke = Smoke(x , y)
         scene.addGameObject(smoke ,3)
 
@@ -408,14 +464,14 @@ class Smoke(Block):
         super().__init__(x, y, image)
         self.health = 2
 
-    def update(self, game):
+    def update(self):
         import random
-        super().update(game)
+        super().update()
         r = random.randint(1, 2)
         if r == 2:
             self.health -= 1
 
-        scene = self.game.curScene
+        scene = Game.curGame.curScene
 
         gameObjects = scene.getGameObjectsAtPos(self.x, self.y)
         smokeCount = 0

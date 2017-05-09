@@ -4,17 +4,20 @@ import os, time
 class Game(object):
 
     MIN_DELTA_TIME = 0.15
-    Width = 0
-    Height = 0
+    curGame = None
+    width = 0
+    height = 0
 
     def __init__(self, title, width, height):
+        Game.curGame = self
+        Game.width = width
+        Game.height = height
+
         self.__title = title
         # To delete
         self.__width = width
         self.__height = height
-        
-        Game.Width = width
-        Game.Height = height
+
         self.__screenBuffer = engine.screenBuffer.ScreenBuffer(width, height)
         self.__keyboard = engine.keyboard.Keyboard()
         self.__curScene = None
@@ -52,18 +55,16 @@ class Game(object):
     def loadScene(self, scene):
         # Update keyboard to clear out any keys pressed from last scene
         self.__keyboard.update()
-
-        scene.game = self
         self.__curScene = scene
         self.__curScene.load()
 
     def update(self):
         self.__keyboard.update()
-        self.__curScene.update(self)
+        self.__curScene.update()
         self.__curScene.updateGameObjects()
 
     def draw(self):
-        self.__curScene.draw()
+        self.__curScene.draw(self)
 
     @property
     def curScene(self):

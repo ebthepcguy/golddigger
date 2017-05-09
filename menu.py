@@ -59,26 +59,26 @@ class Menu(Scene):
 
         if not ( isinstance(self, MainMenu) ):
             message = "Press ESC to return"
-            x = self.game.width - len(message) - 1
-            y = self.game.height - 1
+            x = Game.curGame.width - len(message) - 1
+            y = Game.curGame.height - 1
             self.addGameObject( GameObject(x, y, Image.stringToImage(message) ) )
 
-    def update(self, game):
-        super().update(game)
+    def update(self):
+        super().update()
 
-        kb = game.keyboard
+        kb = Game.curGame.keyboard
 
         if ( kb.keyPressed(KeyCode.ESC) and not isinstance(self, MainMenu) ):
             self.goBack()
 
     def goBack(self):
-        self.game.loadScene(self.lastScene)
+        Game.curGame.loadScene(self.lastScene)
 
     def drawBoarder(self, offset = 1):
-        maxX = Game.Width - 1
-        maxY = Game.Height - 2
-        for y in range(0, Game.Height):
-            for x in range(0, Game.Width):
+        maxX = Game.width - 1
+        maxY = Game.height - 2
+        for y in range(0, Game.height):
+            for x in range(0, Game.width):
 
                 if x == 0 + offset and y == 0 + offset:
                     self.addShape(x, y, "╔")
@@ -112,14 +112,14 @@ class SaveMenu(Menu):
         self.__inputAria = InputAria(self.originX, self.originY, self.__inputText)
         self.addGameObject( self.__inputAria )
 
-    def update(self, game):
-        super().update(game)
+    def update(self):
+        super().update()
 
-        kb = game.keyboard
+        kb = Game.curGame.keyboard
 
         if (kb.keyPressed(KeyCode.ENTER)):
             if self.__inputText:
-                self.saveData(game)
+                self.saveData()
         elif (kb.keyPressed(KeyCode.BACKSPACE)):
             self.__inputText = self.__inputText[:-1]
         elif not (kb.keyPressed(KeyCode.SPACEBAR)):
@@ -133,7 +133,7 @@ class SaveMenu(Menu):
 
         self.__inputAria.text = self.__inputText
 
-    def saveData(self, game):
+    def saveData(self):
 
         s = shelve.open(self.fileName)
         s[self.__inputText] = self.lastScene.gameObjects
@@ -170,15 +170,15 @@ class SelectionMenu(Menu):
 
         self.addGameObject( self.selector )
 
-    def update(self, game):
-        super().update(game)
+    def update(self):
+        super().update()
 
-        kb = game.keyboard
+        kb = Game.curGame.keyboard
 
         if (kb.keyPressed(KeyCode.w)):
-            self.selector.y = clamp( self.selector.y - 1, self.originY, self.originY + len(self.options) )
+            self.selector.y = clamp( self.selector.y - 1, self.originY, self.originY + len(self.options) -1 )
         elif (kb.keyPressed(KeyCode.s)):
-            self.selector.y = clamp( self.selector.y + 1, self.originY, self.originY + len(self.options) )
+            self.selector.y = clamp( self.selector.y + 1, self.originY, self.originY + len(self.options) -1 )
 
     def generateOptions(self, optionNames):
         for name in optionNames:
@@ -222,32 +222,32 @@ class MainMenu(SelectionMenu):
 
             self.generateOptions(optionNames)
 
-    def update(self, game):
-        super().update(game)
+    def update(self):
+        super().update()
         import winsound
 
-        kb = game.keyboard
+        kb = Game.curGame.keyboard
 
         if (kb.keyPressed(KeyCode.ENTER)):
             winsound.PlaySound('sounds/select.wav', winsound.SND_FILENAME)
             selectedOption = self.getSelectedOption()
 
             if ( selectedOption == self.options[0].text ):
-                self.startGame(game)
+                self.startGame()
             elif ( selectedOption == self.options[1].text ):
                 l = LoadMenu("Load Saved Game:", self)
                 l.fileName = Menu.GAME_FILE
-                game.loadScene(l)
+                Game.curGame.loadScene(l)
             elif ( selectedOption == self.options[2].text ):
                 l = LoadMenu("Load Custom Level:", self)
                 l.fileName = Menu.LEVEL_FILE
-                game.loadScene(l)
+                Game.curGame.loadScene(l)
             elif ( selectedOption == self.options[3].text ):
-                self.startEditor(game)
+                self.startEditor()
             elif ( selectedOption == self.options[4].text ):
-                game.quit()
+                Game.curGame.quit()
 
-    def startGame(self, game):
+    def startGame(self):
         s = shelve.open(Menu.LEVEL_FILE)
 
         try:
@@ -256,16 +256,16 @@ class MainMenu(SelectionMenu):
             l.gameObjects = data
         except:
             l = level.Level()
-            l.generate()
+            l.generateMap()
 
         s.close()
 
-        game.loadScene(l)
+        Game.curGame.loadScene(l)
 
-    def startEditor(self, game):
+    def startEditor(self):
         import levelEditor
         e = levelEditor.LevelEditor()
-        game.loadScene(e)
+        Game.curGame.loadScene(e)
 
 
 
@@ -283,10 +283,10 @@ class LoadMenu(SelectionMenu):
 
         self.generateOptions(optionNames)
 
-    def update(self, game):
-        super().update(game)
+    def update(self):
+        super().update()
 
-        kb = game.keyboard
+        kb = Game.curGame.keyboard
 
         if (kb.keyPressed(KeyCode.ENTER)):
             selectedOption = self.getSelectedOption()
@@ -306,9 +306,9 @@ class LoadMenu(SelectionMenu):
         s.close()
 
         if ( isinstance( self.lastScene, levelEditor.LevelEditor ) ):
-            self.game.loadScene(e)
+            Game.curGame.loadScene(e)
         else:
-            self.game.loadScene(l)
+            Game.curGame.loadScene(l)
 
 class Selector(GameObject):
 
@@ -316,8 +316,8 @@ class Selector(GameObject):
         super().__init__(x, y)
         self.image = Image.stringToImage("=>")
 
-    def update(self, game):
-        super().update(game)
+    def update(self):
+        super().update()
 
 
 
@@ -336,8 +336,8 @@ class Option(GameObject):
     def text(self, text):
         self.__text = text
 
-    def update(self, game):
-        super().update(game)
+    def update(self):
+        super().update()
 
 
 
@@ -356,8 +356,8 @@ class InputAria(GameObject):
     def text(self, text):
         self.__text = text
 
-    def update(self, game):
-        super().update(game)
+    def update(self):
+        super().update()
 
         self.updateImage()
 

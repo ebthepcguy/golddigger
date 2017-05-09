@@ -3,9 +3,10 @@ from engine.gameObject import GameObject
 from engine.game import Game
 from engine.util import Rect
 from engine.keyboard import Keyboard, KeyCode
-from engine.popup import Popup
+from engine.image import Image
 
 import characters, blocks, menu, time
+from popup import Popup
 from debugDisplay import DebugDisplay
 from hud import Hud
 
@@ -17,19 +18,47 @@ class Level(Scene):
     def __init__(self):
         super().__init__()
         self.__popup = Popup("Save Game", "Load Game", "QUIT to Main Menu")
-        self.__player = None
-        self.__gameAria = None
 
-    @property
-    def player(self):
-        return self.__player
+    def load(self):
+        super().load()
 
-    @player.setter
-    def player(self, player):
-        self.__player = player
+        blockWidth = blocks.Block.width
+        blockHeight = blocks.Block.height
+        self.gameArea = Rect(Game.curGame.width - blockWidth, Game.curGame.height - Hud.height, 0, 0)
 
-    def update(self, game):
-        kb = game.keyboard
+        playerStartX = blockWidth
+        playerStartY = blockHeight
+
+        # If there are playerSpawn blocks
+        if ( self.hasAny(blocks.PlayerSpawn) ):
+            # Get the location of the block
+            playerSpawn = self.getGameObjectsByType(blocks.PlayerSpawn)
+            # Create a player if there is not one already
+            if not ( self.player ):
+                self.player = characters.Player(playerStartX, playerStartY)
+            # Spawn the player on the block
+            self.player.x = playerSpawn[0].x
+            self.player.y = playerSpawn[0].y
+            self.removeGameObjectsByType(blocks.PlayerSpawn)
+            self.addGameObject(self.player)
+        # If there are not Player Objects create one
+        elif ( not self.hasAny(characters.Player) ):
+            if not ( self.player ):
+                self.player = characters.Player(0, 0)
+            self.player.x = playerStartX
+            self.player.y = playerStartY
+            self.addGameObject(self.player)
+        # If there are Player Objects
+        elif ( self.hasAny(characters.Player) ):
+            self.player = self.getGameObjectsByType(characters.Player)[0]
+
+        self.addGameObject(Hud(blockWidth, self.gameArea.height + blockHeight))
+
+        self.originalGos = self.gameObjects
+
+    def update(self):
+        kb = Game.curGame.keyboard
+
         if (kb.keyPressed(KeyCode.ESC)):
             if self.paused:
                 self.paused = False
@@ -43,55 +72,15 @@ class Level(Scene):
                 activeOption = self.__popup.activeOption
 
                 if activeOption == 0:
-                    self.saveGameMenu(game)
+                    self.saveGameMenu()
                 elif activeOption == 1:
-                    self.loadGameMenu(game)
+                    self.loadGameMenu()
                 elif activeOption == 2:
-                    game.loadScene(menu.MainMenu())
+                    Game.curGame.loadScene(menu.MainMenu())
 
-    def load(self):
-        super().load()
-        self.__gameArea = Rect(self.game.width, self.game.height - 9, 0, 0)
-
-        # If there are playerSpawn blocks
-        if ( self.hasAny(blocks.PlayerSpawn) ):
-            # Get the location of the block
-            playerSpawn = self.getGameObjectsByType(blocks.PlayerSpawn)
-            # Create a player if there is not one already
-            if not ( self.__player ):
-                self.__player = characters.Player(0, 0)
-            # Spawn the player on the block
-            self.__player.x = playerSpawn[0].x
-            self.__player.y = playerSpawn[0].y
-            self.removeGameObjectsByType(blocks.PlayerSpawn)
-            self.addGameObject(self.__player)
-        # If there are not Player Objects create one
-        elif ( not self.hasAny(characters.Player) ):
-            if not ( self.__player ):
-                self.__player = characters.Player(0,0)
-            self.__player.x = 3
-            self.__player.y = 1
-            self.addGameObject(self.__player)
-        # If there are Player Objects
-        elif ( self.hasAny(characters.Player) ):
-            self.__player = self.getGameObjectsByType(characters.Player)[0]
-
-        self.addGameObject(DebugDisplay(0, self.game.height - 6))
-
-        self.addGameObject(Hud(0, self.__gameArea.height))
-
-        self.originalGos = self.gameObjects
-
-    # to delete
-    def getPlayer(self):
-        return self.__player
-
-    def getGameArea(self):
-        return self.__gameArea
-
-    def generate(self):
-        width = Game.Width
-        height = Game.Height - 9
+    def generateOld(self):
+        width = Game.width
+        height = Game.height - 9
 
         # Build base layer of air and stone
         for row in range(0, height):
@@ -115,20 +104,46 @@ class Level(Scene):
         # Add player
         #self.addGameObject(self.__player)
 
-    def saveGameMenu(self, game):
+    def generateMap(self):
+
+        blockWidth = 3
+        blockHeight = 1
+
+        self.gameArea = Rect(Game.curGame.width - blockWidth, Game.curGame.height - Hud.height, 0, 0)
+
+        levelWidth = self.gameArea.width
+        levelHeight = self.gameArea.height
+        startX = self.gameArea.x
+        startY = self.gameArea.y
+
+        doorYPos = 7
+
+        for y in range(startY, levelHeight + blockHeight, blockHeight):
+            for x in range(startX, levelWidth + blockWidth, blockWidth):
+                if ( y == startY or x == startX or x == levelWidth or y == levelHeight ):
+                    if( x == blockWidth * doorYPos and y == levelHeight ):
+                        block = blocks.Door(x, y)
+                    else:
+                        block = blocks.Wall(x, y)
+                else:
+                    block = blocks.Dirt(x, y)
+
+                self.addGameObject(block)
+
+    def saveGameMenu(self):
 
         self.paused = False
         self.removeGameObjectsByType(Popup)
 
         saveMenu = menu.SaveMenu("Save Your Game: Enter a name.", self)
         saveMenu.fileName = menu.Menu.GAME_FILE
-        game.loadScene(saveMenu)
+        Game.curGame.loadScene(saveMenu)
 
-    def loadGameMenu(self, game):
+    def loadGameMenu(self):
 
         self.paused = False
         self.removeGameObjectsByType(Popup)
 
         loadMenu = menu.LoadMenu("Load Game:", self)
         loadMenu.fileName = menu.Menu.GAME_FILE
-        game.loadScene(loadMenu)
+        Game.curGame.loadScene(loadMenu)

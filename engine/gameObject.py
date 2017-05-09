@@ -10,6 +10,7 @@ class GameObject(object):
         self.image = image
         self.__collision = collision # If the object has collision
         self.__destructable = destructable
+        self.__canPause = True
 
     @property
     def x(self):
@@ -61,6 +62,14 @@ class GameObject(object):
     def destructable(self, destructable):
         self.__destructable = destructable
 
+    @property
+    def canPause(self):
+        return self.__canPause
+
+    @canPause.setter
+    def canPause(self, canPause):
+        self.__canPause = canPause
+
     def generateRect(self):
 
         # If the object has no image, give it a 1 by 1 Rectangle
@@ -80,5 +89,5 @@ class GameObject(object):
 
             self.__rect = engine.util.Rect(width,height)
 
-    def update(self, game):
+    def update(self):
         pass
