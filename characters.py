@@ -118,16 +118,19 @@ class Character(GameObject):
             scene = Game.curGame.curScene
             gameAria = Game.curGame.curScene.gameArea
 
+            xDir = None
+
             if (self.x < block.x and self.y == block.y):
                 xDir = 1
             elif (self.x > block.x and self.y == block.y):
                 xDir = -1
 
-            gameObjects = scene.getGameObjectsAtPos(block.x + (xDir*3), block.y)
-            if len(gameObjects) == 0:
-                block.x += xDir*3
-                self.x += xDir*3
-                blockPushed = True
+            if(xDir):
+                gameObjects = scene.getGameObjectsAtPos(block.x + (xDir*3), block.y)
+                if len(gameObjects) == 0:
+                    block.x += xDir*3
+                    self.x += xDir*3
+                    blockPushed = True
 
         return blockPushed
 
@@ -244,7 +247,7 @@ class Player(Character):
             elif(isinstance(gO, blocks.Wall)):
                 pass
             elif(isinstance(gO, blocks.Door)):
-                if ( self.level == 5 ):
+                if ( self.level == level.Level.MAX_LEVEL ):
                     self.win()
                 else:
                     self.goToNextLevel()
@@ -443,7 +446,6 @@ class Enemy(Character):
             self.image = self.__rightImage
         elif(self.__xVel < 0):
             self.image = self.__leftImage
-
 
 class EditCursor(Character):
 

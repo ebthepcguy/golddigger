@@ -13,7 +13,8 @@ from hud import Hud
 
 class Level(Scene):
 
-    AIR_LEVEL = 3
+    MAX_LEVEL = 5
+
 
     def __init__(self):
         super().__init__()

@@ -3,7 +3,7 @@ import os, time
 
 class Game(object):
 
-    MIN_DELTA_TIME = 0.15 # Minimum time between frames
+    MIN_DELTA_TIME = 0.05 # Minimum time between frames
     curGame = None
     width = 0
     height = 0

@@ -20,7 +20,10 @@ class Hud(GameObject):
         image = ""
         image += "Health " + str(player.health) + "/" + str(player.maxHealth)
         image += " Gold " + str(player.gold)
-        image += "\n"
+        image += "\n\n"
 
+        image += "Controls: W(Up/Jump), A(Left), S(Down), D(Right)" + "\n"
+        image += "Enemies: Basic <<Ö : Pusher ╠═Ö : Digger ««ö" + "\n"
+        image += "Blocks: Dirt ▒▒▒ : Gold [$] : Stone [#]" + "\n"
 
         self.image = Image.stringToImage(image)
