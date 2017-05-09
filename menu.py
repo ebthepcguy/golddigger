@@ -176,9 +176,9 @@ class SelectionMenu(Menu):
         kb = Game.curGame.keyboard
 
         if (kb.keyPressed(KeyCode.w)):
-            self.selector.y = clamp( self.selector.y - 1, self.originY, self.originY + len(self.options) -1 )
+            self.selector.y = clamp( self.selector.y - 1, self.originY, self.originY + len(self.options))
         elif (kb.keyPressed(KeyCode.s)):
-            self.selector.y = clamp( self.selector.y + 1, self.originY, self.originY + len(self.options) -1 )
+            self.selector.y = clamp( self.selector.y + 1, self.originY, self.originY + len(self.options))
 
     def generateOptions(self, optionNames):
         for name in optionNames:

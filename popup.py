@@ -43,7 +43,7 @@ class Popup(GameObject):
         elif (kb.keyPressed(KeyCode.s)):
             self.__activeOption += 1
 
-        self.__activeOption = clamp( self.__activeOption, 0, len(self.__options) -1 )
+        self.__activeOption = clamp( self.__activeOption, 0, len(self.__options))
 
         image = self.generateCurrentImage()
         self.image = Image.stringToImage(image)

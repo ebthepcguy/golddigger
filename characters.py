@@ -223,8 +223,8 @@ class Player(Character):
 
         gameArea = scene.gameArea
 
-        x = clamp( self.x + x, gameArea.x, gameArea.width )
-        y = clamp( self.y + y, gameArea.y, gameArea.height )
+        x = clamp( self.x + x, gameArea.x, gameArea.width + 1 )
+        y = clamp( self.y + y, gameArea.y, gameArea.height + 1)
 
         canMove = True
         gameObjects = scene.getGameObjectsAtPos(x, y)
@@ -275,7 +275,7 @@ class Player(Character):
             l.gameObjects = data
         except:
             l = level.Level()
-            l.generate()
+            l.generateMap()
 
         l.player = self
 
@@ -398,8 +398,8 @@ class Enemy(Character):
         scene = Game.curGame.curScene
         gameArea = scene.gameArea
 
-        x = clamp( self.x + x, gameArea.x, gameArea.width )
-        y = clamp( self.y + y, gameArea.y, gameArea.height )
+        x = clamp( self.x + x, gameArea.x, gameArea.width)
+        y = clamp( self.y + y, gameArea.y, gameArea.height)
 
         canMove = True
         gameObjects = scene.getGameObjectsAtPos(x, y)

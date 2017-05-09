@@ -3,7 +3,7 @@ import os, time
 
 class Game(object):
 
-    MIN_DELTA_TIME = 0.15
+    MIN_DELTA_TIME = 0.15 # Minimum time between frames
     curGame = None
     width = 0
     height = 0
@@ -14,10 +14,6 @@ class Game(object):
         Game.height = height
 
         self.__title = title
-        # To delete
-        self.__width = width
-        self.__height = height
-
         self.__screenBuffer = engine.screenBuffer.ScreenBuffer(width, height)
         self.__keyboard = engine.keyboard.Keyboard()
         self.__curScene = None
