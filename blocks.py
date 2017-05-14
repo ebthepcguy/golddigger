@@ -311,11 +311,13 @@ class Bomb(Block):
 
         if(self.__health >= 2):
             self.image = self.full
+            self.canFall = False
         elif(self.__health == 1):
             self.image = self.HALF
             self.canFall = True
         elif(self.__health <= 0):
             self.__fuseLit = True
+            self.canFall = True
             self.pushable = True
 
     @property
@@ -493,6 +495,7 @@ class Smoke(Block):
         image = Image.stringToImage("▓▓▓")
         super().__init__(x, y, image)
         self.health = 2
+        self.collision = False
 
     def update(self):
         import random

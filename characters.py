@@ -367,7 +367,10 @@ class Enemy(Character):
         self.__health = health
 
         if self.health <= 0:
-            Game.curGame.curScene.removeGameObject(self)
+            scene = Game.curGame.curScene
+            goldPickup = blocks.GoldPickup(self.x, self.y)
+            scene.addGameObject(goldPickup)
+            scene.removeGameObject(self)
 
     @property
     def canDig(self):
