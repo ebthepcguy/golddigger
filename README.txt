@@ -3,6 +3,7 @@
 Instructions:
 Main Game:
 	How to play:
+		Run goldDigger.py to play game
 		Find your way to the exit
 
 	Controls:
