@@ -58,24 +58,6 @@ class LevelEditor(Scene):
                 elif activeOption == 2:
                     Game.curGame.loadScene(menu.MainMenu())
 
-    def generateOld(self, width, height):
-
-        for row in range(0,height):
-            for col in range(0, width * 3, 3):
-                if (row == 0):
-                    block = blocks.Wall(col, row)
-                elif ( col == 0 or col == width - 3):
-                    block = blocks.Wall(col, row)
-                elif (row == height - 1):
-                    if(col == int(width / 3) -1):
-                        block = blocks.Door(col, row)
-                    else:
-                        block = blocks.Wall(col, row)
-                else:
-                    block = blocks.Dirt(col, row)
-
-                self.addGameObject(block)
-
     def generateMap(self):
         blockWidth = 3
         blockHeight = 1

@@ -19,8 +19,8 @@ class Hud(GameObject):
         image = ""
 
         if isinstance(scene, level.Level):
-            image += "Health " + str(player.health) + "/" + str(player.maxHealth)
-            image += " Gold " + str(player.gold)
+            image += "Health: " + str(player.health) + "/" + str(player.maxHealth)
+            image += " │ Gold: " + str(player.gold) + " │ Level: " + str(player.level) + "/" + str(level.Level.MAX_LEVEL)
             image += "\n\n"
 
             image += "Controls:  W(Up/Jump) │ A(Left)    │ S(Down)    │ D(Right)" + "\n"

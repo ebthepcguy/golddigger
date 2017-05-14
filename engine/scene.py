@@ -50,6 +50,14 @@ class Scene(object):
     def gameArea(self, gameArea):
         self.__gameArea = gameArea
 
+    @property
+    def quitting(self):
+        return self.__quitting
+
+    @quitting.setter
+    def quitting(self, quitting):
+        self.__quitting = quitting
+
     def load(self):
         pass
 

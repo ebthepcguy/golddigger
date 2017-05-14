@@ -15,7 +15,6 @@ class Level(Scene):
 
     MAX_LEVEL = 3
 
-
     def __init__(self):
         super().__init__()
         self.__popup = Popup("Save Game", "Load Game", "QUIT to Main Menu")
@@ -78,32 +77,6 @@ class Level(Scene):
                     self.loadGameMenu()
                 elif activeOption == 2:
                     Game.curGame.loadScene(menu.MainMenu())
-
-    def generateOld(self):
-        width = Game.width
-        height = Game.height - 9
-
-        # Build base layer of air and stone
-        for row in range(0, height):
-            for col in range(0, width * 3, 3):
-                if (row == 0):
-                    block = blocks.Wall(col, row)
-                elif ( col == 0 or col == width - 3):
-                    block = blocks.Wall(col, row)
-                elif (row in range(0, self.AIR_LEVEL)):
-                    pass
-                elif (row == height - 1):
-                    if(col == int(width / 3) -1):
-                        block = blocks.Door(col, row)
-                    else:
-                        block = blocks.Wall(col, row)
-                else:
-                    block = blocks.Dirt(col, row)
-
-                self.addGameObject(block)
-
-        # Add player
-        #self.addGameObject(self.__player)
 
     def generateMap(self):
 

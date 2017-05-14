@@ -72,6 +72,7 @@ class Menu(Scene):
             self.goBack()
 
     def goBack(self):
+        self.lastScene.quitting = False
         Game.curGame.loadScene(self.lastScene)
 
     def drawBoarder(self, offset = 1):
