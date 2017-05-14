@@ -34,6 +34,8 @@ class LevelEditor(Scene):
         # Add player
         self.addGameObject(self.player, 1)
 
+        self.addGameObject(Hud(blockWidth, self.gameArea.height + blockHeight))
+
     def update(self):
         kb = Game.curGame.keyboard
 

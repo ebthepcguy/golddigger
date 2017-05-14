@@ -4,7 +4,7 @@ from engine.gameObject import GameObject
 from engine.game import Game
 from engine.keyboard import Keyboard, KeyCode
 from engine.util import clamp
-import pickle, shelve, level, levelEditor, copy
+import pickle, shelve, level, levelEditor, copy, os
 
 class Menu(Scene):
 
@@ -218,18 +218,17 @@ class MainMenu(SelectionMenu):
                            "Load Saved Game",
                            "Load Custom Level",
                            "Launch Level Editor",
+                           "View Instructions",
                            "Exit Game"]
 
             self.generateOptions(optionNames)
 
     def update(self):
         super().update()
-        import winsound
 
         kb = Game.curGame.keyboard
 
         if (kb.keyPressed(KeyCode.ENTER)):
-            winsound.PlaySound('sounds/select.wav', winsound.SND_FILENAME)
             selectedOption = self.getSelectedOption()
 
             if ( selectedOption == self.options[0].text ):
@@ -245,7 +244,7 @@ class MainMenu(SelectionMenu):
             elif ( selectedOption == self.options[3].text ):
                 self.startEditor()
             elif ( selectedOption == self.options[4].text ):
-                subprocess.call(['C:\\Windows\\System32\\Notepad.exe', 'README.txt'])
+                os.system("notepad.exe README.txt")
             elif ( selectedOption == self.options[5].text ):
                 Game.curGame.quit()
 

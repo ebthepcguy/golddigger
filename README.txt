@@ -1,4 +1,4 @@
-# golddigger
+﻿# golddigger
 
 Instructions:
 Main Game:
@@ -29,7 +29,9 @@ Main Game:
       " <<ö " Enemy (Moving left)
       " Ö»» " Enemy (Moving right - can dig and damage bomb blocks)
       " ««Ö " Enemy (Moving left - can dig and damage bomb blocks)
-      " [?] " Bomb (health 2/2 - Will fall when damaged and explode after the fuse is lit)
+      " Ö═╣ " Enemy (Moving right - can push certain objects)
+      " ╠═Ö " Enemy (Moving left - can push certain objects)	
+      " [3] " Bomb (health 2/2 - Will fall when damaged and explode after the fuse is lit, number displays fuse time)
       " {!} " Bomb (health 1/2 - Can fall and damage any character)
       " {3} " Bomb (health 0/2 - Counts down from three then explodes)
 
@@ -56,9 +58,10 @@ Main Game:
       " . ": Places a Bomb block
       " - ": Decreases health of certain objects
       " + ": Increases health of certain objects
-      " / ": Switches Enemy's direction
-      " * ": Switches Enemy's canDig bool and explodes bombs
+      " / ": Switches Enemy's direction, decreases Bomb fuse time
+      " * ": Switches Enemy's canDig and canPush bool, increases Bomb fuse time
       Spacebar: Places a marker to make it easier to fill in a large aria with objects
+      ENTER: Explodes Bombs	
 
     Objects:
       " {   " Editor Cursor (Moves with w, a, s, d and can place objects with numbers)

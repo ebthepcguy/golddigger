@@ -114,6 +114,9 @@ class Dirt(Block):
         self.health = maxHealth
         self.destructable = True
 
+    def __str__(self):
+        return "Dirt" + "\t Health: " + str(self.health) + "/" + str(self.maxHealth)
+
     @property
     def health(self):
         return self.__health
@@ -144,6 +147,9 @@ class Gold(Block):
         self.maxHealth = maxHealth
         self.health = maxHealth
         self.destructable = True
+
+    def __str__(self):
+        return "Gold" + "\t Health: " + str(self.health) + "/" + str(self.maxHealth)
 
     @property
     def health(self):
@@ -176,6 +182,9 @@ class Stone(Block):
         self.health = maxHealth
         self.pushable = True
 
+    def __str__(self):
+        return "Stone"
+
     @property
     def health(self):
         return self.__health
@@ -196,10 +205,16 @@ class Wall(Block):
         image = Image([[Tile("█"), Tile("█"), Tile("█")]])
         super().__init__(x, y, image)
 
+    def __str__(self):
+        return "Wall"
+
 class Door(Block):
     def __init__(self, x, y):
         image = Image([[Tile(" "),Tile(" "),Tile(" ")]])
         super().__init__(x, y, image)
+
+    def __str__(self):
+        return "Door"
 
     def update(self):
         super().update()
@@ -214,6 +229,9 @@ class PlayerSpawn(Block):
     def __init__(self, x, y):
         image = Image([[Tile(" "), Tile(" "), Tile(" ")]])
         super().__init__(x, y, image)
+
+    def __str__(self):
+        return "Player Spawn"
 
     def update(self):
         super().update()
@@ -231,6 +249,9 @@ class GoldPickup(Block):
         self.collision = False
         self.canFall = True
 
+    def __str__(self):
+        return "Gold Pickup"
+
     def update(self):
         super().update()
 
@@ -240,6 +261,9 @@ class HealthPickup(Block):
         super().__init__(x, y, image)
         self.collision = False
         self.canFall = True
+
+    def __str__(self):
+        return "Health Pickup"
 
     def update(self):
         super().update()
@@ -270,6 +294,12 @@ class Bomb(Block):
         self.health = maxHealth
         self.destructable = True
         self.canHurt = True
+
+    def __str__(self):
+        out = "Bomb"
+        out += "   (+│-)Health: " + str(self.health) + "/" + str(self.maxHealth)
+        out += "   (*│/)Fuse Time: " + str(self.fullFuseTime)
+        return out
 
     @property
     def health(self):

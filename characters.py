@@ -87,7 +87,7 @@ class Character(GameObject):
             canJump = True
             for gO in gameObjects:
                 if(gO.collision):
-                    onSolidGround = False
+                    canJump = False
 
             y = clamp(self.y - 1, scene.gameArea.y, scene.gameArea.height)
 
@@ -348,6 +348,16 @@ class Enemy(Character):
         self.canAttack = True
         self.destructable = True
 
+    def __str__(self):
+        out = "Normal Enemy"
+        if self.canDig:
+            out = "Digging Enemy"
+        elif self.canPush:
+            out = "Pushing Enemy"
+        out += "   Health: " + "(+│-)" + str(self.health) + "/" + str(self.maxHealth)
+        out += "   (*)Change Type   (/)Change Direction"
+        return out
+
     @property
     def health(self):
         return self.__health
@@ -526,11 +536,18 @@ class EditCursor(Character):
         for gO in gameObjects:
 
             if gO.destructable:
-                if (kb.keyPressed(KeyCode.PLUS)):
-                    gO.health += 1
-                elif (kb.keyPressed(KeyCode.MINUS)):
-                    # 3 should be changed to max health
-                    gO.health = clamp(gO.health - 1, 1, 3)
+                if isinstance(gO, Enemy):
+                    if (kb.keyPressed(KeyCode.PLUS)):
+                        gO.maxHealth += 1
+                        gO.health = clamp(gO.health + 1, 1, gO.maxHealth + 1)
+                    elif (kb.keyPressed(KeyCode.MINUS)):
+                        gO.maxHealth = clamp(gO.maxHealth - 1, 1, gO.maxHealth + 1)
+                        gO.health = clamp(gO.health - 1, 1, gO.maxHealth + 1)
+                else:
+                    if (kb.keyPressed(KeyCode.PLUS)):
+                        gO.health = clamp(gO.health + 1, 1, gO.maxHealth + 1)
+                    elif (kb.keyPressed(KeyCode.MINUS)):
+                        gO.health = clamp(gO.health - 1, 1, gO.maxHealth + 1)
 
             if isinstance(gO, Enemy):
                 if (kb.keyPressed(KeyCode.TIMES)):
@@ -545,9 +562,9 @@ class EditCursor(Character):
                     gO.reverseDir()
             elif isinstance(gO, blocks.Bomb):
                 if (kb.keyPressed(KeyCode.TIMES)):
-                    gO.fullFuseTime = clamp(gO.fullFuseTime + 1, 1, 5)
+                    gO.fullFuseTime = clamp(gO.fullFuseTime + 1, 1, 11)
                 elif (kb.keyPressed(KeyCode.DIVIDE)):
-                    gO.fullFuseTime = clamp(gO.fullFuseTime - 1, 1, 5)
+                    gO.fullFuseTime = clamp(gO.fullFuseTime - 1, 1, 11)
                 elif (kb.keyPressed(KeyCode.ENTER)):
                     gO.health = 0
 
